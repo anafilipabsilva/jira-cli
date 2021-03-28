@@ -1,9 +1,13 @@
 export class Step {
-  name: string;
-  description: string;
+  action: string;
+  data: string;
+  result: string;
 }
 
 export class JiraTest {
-  name: string;
+  summary: string;
+  projectKey: string;
+  description: string;
+  issueType: string;
   steps: Step[];
 }
