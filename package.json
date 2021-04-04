@@ -24,6 +24,8 @@
     "@nestjs/common": "^7.6.13",
     "@nestjs/core": "^7.6.13",
     "@nestjs/platform-express": "^7.6.13",
+    "dotenv": "^8.2.0",
+    "jira.js": "^2.0.6",
     "nestjs-command": "^2.0.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",

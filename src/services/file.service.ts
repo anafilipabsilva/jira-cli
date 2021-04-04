@@ -1,10 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { readFile } from 'fs';
-import { JiraTest } from './../entities/jiraTest.entity';
 
 @Injectable()
 export class FileService {
-  async readFile(filepath: string): Promise<JiraTest> {
+  async readFile(filepath: string): Promise<any> {
     const fileInfo = await new Promise<string>((resolve, reject) => {
       readFile(filepath, 'utf8', (err, data) => {
         if (err) {

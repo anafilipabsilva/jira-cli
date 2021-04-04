@@ -1,0 +1,70 @@
+{
+    "fields": {
+        "issuetype": {
+            "name": "Test"
+        },
+        "project": {
+            "key": "AP"
+        },
+        "summary": "Test from CLI",
+        "description": {
+            "version": 1,
+            "type": "doc",
+            "content": [
+                {
+                    "type": "paragraph",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "This is a test description"
+                        }
+                    ]
+                }
+            ]
+        },
+        "customfield_10040": {
+            "version": 1,
+            "type": "doc",
+            "content": [
+                {
+                    "type": "paragraph",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "Test acceptance criteria"
+                        }
+                    ]
+                }
+            ]
+        },
+        "components": [
+            {
+                "name": "CRM Bridges"
+            }
+        ],
+        "labels": [
+            "asgard"
+        ],
+        "fixVersions": [
+            {
+                "name": "Spring'21"
+            }
+        ]
+    },
+    "update": {
+        "issuelinks": [
+            {
+                "add": {
+                    "type": {
+                        "name": "Test",
+                        "inward": "is tested by",
+                        "outward": "tests"
+                    },
+                    "outwardIssue": {
+                        "key": "AP-2"
+                    }
+                }
+            }
+        ]
+    }
+}
