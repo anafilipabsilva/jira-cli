@@ -19,6 +19,7 @@ export class CreateTestsCommand {
     })
     filepath: string,
   ) {
-    await this.createTestsInteractor.call(filepath);
+    const result = await this.createTestsInteractor.call(filepath);
+    console.dir(result);
   }
 }

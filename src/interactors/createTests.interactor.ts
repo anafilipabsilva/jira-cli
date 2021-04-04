@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { JiraTest } from 'src/entities/jiraTest.entity';
+import { CreateIssue, UpdateIssue } from 'src/entities/issue.entity';
 import { FileService } from './../services/file.service';
 import { JiraGateway } from './../gateways/jira.gateway';
 
@@ -11,14 +11,18 @@ export class CreateTestsInteractor {
   ) {}
 
   async call(filepath: string) {
-    const tests = await this.fileService.readFile(filepath);
+    const tests = await this.fileService.readFile<CreateIssue[]>(filepath);
 
-    // this.validRequiredFields(tests);
+    const result = [];
+    for (const test of tests) {
+      // this.validRequiredFields(tests);
 
-    await this.jiraGateway.createIssue(tests);
+      result.push(await this.jiraGateway.createIssue(test));
+    }
+    return result;
   }
 
-  private validRequiredFields(test: JiraTest): void {
+  private validRequiredFields(test: CreateIssue): void {
     const requiredFields = [
       'summary',
       'description',

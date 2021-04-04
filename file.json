@@ -1,70 +1,50 @@
-{
-    "fields": {
-        "issuetype": {
-            "name": "Test"
-        },
-        "project": {
-            "key": "AP"
-        },
-        "summary": "Test from CLI",
-        "description": {
-            "version": 1,
-            "type": "doc",
-            "content": [
-                {
-                    "type": "paragraph",
-                    "content": [
-                        {
-                            "type": "text",
-                            "text": "This is a test description"
-                        }
-                    ]
-                }
-            ]
-        },
-        "customfield_10040": {
-            "version": 1,
-            "type": "doc",
-            "content": [
-                {
-                    "type": "paragraph",
-                    "content": [
-                        {
-                            "type": "text",
-                            "text": "Test acceptance criteria"
-                        }
-                    ]
-                }
-            ]
-        },
+[
+    {
+        "project_key": "AP",
+        "issue_type": "Test",
+        "summary": "Test from CLI - 1",
+        "description": "This is a test description",
+        "acceptance_criteria": "Test acceptance criteria",
         "components": [
             {
                 "name": "CRM Bridges"
             }
         ],
-        "labels": [
-            "asgard"
-        ],
-        "fixVersions": [
+        "labels": ["asgard"],
+        "fix_versions": [
             {
                 "name": "Spring'21"
             }
+        ],
+        "dependencies": [
+            {
+                "type": "relates",
+                "key": "AP-2"
+            }
         ]
     },
-    "update": {
-        "issuelinks": [
+    {
+        "project_key": "AP",
+        "issue_type": "Test",
+        "summary": "Test from CLI - 2",
+        "description": "This is a test description",
+        "acceptance_criteria": "Test acceptance criteria",
+        "components": [
             {
-                "add": {
-                    "type": {
-                        "name": "Test",
-                        "inward": "is tested by",
-                        "outward": "tests"
-                    },
-                    "outwardIssue": {
-                        "key": "AP-2"
-                    }
-                }
+                "name": "CRM Bridges"
+            }
+        ],
+        "labels": ["asgard"],
+        "fix_versions": [
+            {
+                "name": "Spring'21"
+            }
+        ],
+        "dependencies": [
+            {
+                "type": "blocked",
+                "key": "AP-3"
             }
         ]
     }
-}
+]

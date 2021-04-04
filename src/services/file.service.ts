@@ -3,7 +3,7 @@ import { readFile } from 'fs';
 
 @Injectable()
 export class FileService {
-  async readFile(filepath: string): Promise<any> {
+  async readFile<T>(filepath: string): Promise<T> {
     const fileInfo = await new Promise<string>((resolve, reject) => {
       readFile(filepath, 'utf8', (err, data) => {
         if (err) {
