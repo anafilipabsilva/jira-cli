@@ -1,7 +1,9 @@
 import { Module } from '@nestjs/common';
 import { CommandModule } from 'nestjs-command';
 import { CreateTestsCommand } from './commands/createTests.command';
+import { CreateIssuesCommand } from './commands/createIssues.command';
 import { CreateTestsInteractor } from './interactors/createTests.interactor';
+import { CreateIssuesInteractor } from './interactors/createIssues.interactor';
 import { FileService } from './services/file.service';
 import { JiraGateway } from './gateways/jira.gateway';
 import { Version3Client } from 'jira.js';
@@ -26,6 +28,8 @@ const jiraClientProvider = {
   providers: [
     CreateTestsCommand,
     CreateTestsInteractor,
+    CreateIssuesCommand,
+    CreateIssuesInteractor,
     FileService,
     JiraGateway,
     jiraClientProvider,
