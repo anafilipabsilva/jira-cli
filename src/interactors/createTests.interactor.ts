@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CreateIssue, UpdateIssue } from 'src/entities/issue.entity';
+import { CreateIssue } from 'src/entities/issue.entity';
 import { FileService } from './../services/file.service';
 import { JiraGateway } from './../gateways/jira.gateway';
 
@@ -15,7 +15,7 @@ export class CreateTestsInteractor {
 
     const result = [];
     for (const test of tests) {
-      // this.validRequiredFields(tests);
+      this.validRequiredFields(test);
 
       result.push(await this.jiraGateway.createIssue(test));
     }
@@ -26,8 +26,8 @@ export class CreateTestsInteractor {
     const requiredFields = [
       'summary',
       'description',
-      'projectKey',
-      'issueType',
+      'project_key',
+      'issue_type',
     ];
     for (const field of requiredFields) {
       if (test[field] == null) {
