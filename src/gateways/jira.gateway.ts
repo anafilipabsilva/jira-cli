@@ -19,7 +19,9 @@ export class JiraGateway {
 
   public async updateIssue(data: UpdateIssue): Promise<void> {
     const input = this.convertToJiraFormat(data);
-    await this.client.issues.editIssue({ ...input, id: data.id });
+    console.log('this is the input new:');
+    console.dir(input);
+    await this.client.issues.editIssue({ ...input, issueIdOrKey: data.id });
   }
 
   private convertDependency(dependency: Dependency): any {

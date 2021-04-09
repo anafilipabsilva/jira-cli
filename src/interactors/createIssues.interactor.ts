@@ -22,7 +22,7 @@ export class CreateIssuesInteractor {
     return result;
   }
 
-  private validRequiredFields(test: CreateIssue): void {
+  private validRequiredFields(issue: CreateIssue): void {
     const requiredFields = [
       'summary',
       'description',
@@ -30,7 +30,7 @@ export class CreateIssuesInteractor {
       'issue_type',
     ];
     for (const field of requiredFields) {
-      if (test[field] == null) {
+      if (issue[field] == null) {
         throw `The required field "${field}" is not provided in the file`;
       }
     }

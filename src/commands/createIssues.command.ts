@@ -4,7 +4,9 @@ import { CreateIssuesInteractor } from '../interactors/createIssues.interactor';
 
 @Injectable()
 export class CreateIssuesCommand {
-  constructor(private readonly createIssuesInteractor: CreateIssuesInteractor) {}
+  constructor(
+    private readonly createIssuesInteractor: CreateIssuesInteractor,
+  ) {}
 
   @Command({
     command: 'create:issues <filepath>',
