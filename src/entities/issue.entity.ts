@@ -27,6 +27,7 @@ export class CreateIssue {
   labels: string[];
   fix_versions: FixVersion[];
   dependencies: Dependency[];
+  test_type: string;
   steps: Step[];
 }
 

@@ -9,6 +9,7 @@ import { UpdateIssuesInteractor } from './interactors/updateIssues.interactor';
 import { FileService } from './services/file.service';
 import { JiraGateway } from './gateways/jira.gateway';
 import { Version3Client } from 'jira.js';
+import axios from 'axios';
 import 'dotenv/config';
 
 const jiraClientProvider = {
@@ -24,6 +25,11 @@ const jiraClientProvider = {
   }),
 };
 
+const axiosProvider = {
+  provide: 'HTTP_AXIOS',
+  useValue: axios,
+};
+
 @Module({
   imports: [CommandModule],
   controllers: [],
@@ -37,6 +43,7 @@ const jiraClientProvider = {
     FileService,
     JiraGateway,
     jiraClientProvider,
+    axiosProvider,
   ],
 })
 export class AppModule {}

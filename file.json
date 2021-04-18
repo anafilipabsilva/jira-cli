@@ -1,8 +1,9 @@
 [
     {
+        "id": "AP-34",
         "project_key": "AP",
         "issue_type": "Test",
-        "summary": "Test from CLI - 1",
+        "summary": "Test number #2",
         "description": "This is a test description",
         "acceptance_criteria": "Test acceptance criteria",
         "components": [
@@ -21,30 +22,18 @@
                 "type": "relates",
                 "key": "AP-2"
             }
-        ]
-    },
-    {
-        "project_key": "AP",
-        "issue_type": "Test",
-        "summary": "Test from CLI - 2",
-        "description": "This is a test description",
-        "acceptance_criteria": "Test acceptance criteria",
-        "components": [
+        ],
+        "steps": [
             {
-                "name": "CRM Bridges"
+                "action": "- Given I have a test\\n- When I want to do something",
+                "data": "Random data",
+                "result": "- Then it should happen"
+            },
+            {
+                "action": "- Given I have a second test\\n- When I want to do something",
+                "data": "Random second data",
+                "result": "- Then it should happen for the second time"
             }
         ],
-        "labels": ["asgard"],
-        "fix_versions": [
-            {
-                "name": "Spring'21"
-            }
-        ],
-        "dependencies": [
-            {
-                "type": "blocked",
-                "key": "AP-3"
-            }
-        ]
-    }
-]
+        "test_type": "Manual"
+    }]
