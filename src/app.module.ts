@@ -9,6 +9,7 @@ import { JiraGateway } from './gateways/jira.gateway';
 import { Version3Client } from 'jira.js';
 import axios from 'axios';
 import 'dotenv/config';
+import { IssueConverter } from './gateways/issue.converter';
 
 const jiraClientProvider = {
   provide: Version3Client,
@@ -40,6 +41,7 @@ const axiosProvider = {
     JiraGateway,
     jiraClientProvider,
     axiosProvider,
+    IssueConverter,
   ],
 })
 export class AppModule {}

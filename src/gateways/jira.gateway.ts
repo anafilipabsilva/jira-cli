@@ -1,7 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import {
   CreateIssue,
-  Dependency,
   Issue,
   Step,
   UpdateIssue,
@@ -9,6 +8,7 @@ import {
 import { Version3Client } from 'jira.js';
 import { AxiosInstance } from 'axios';
 import { GraphQLClient, gql } from 'graphql-request';
+import { IssueConverter } from './issue.converter';
 
 @Injectable()
 export class JiraGateway {
@@ -16,10 +16,11 @@ export class JiraGateway {
     private readonly client: Version3Client,
     @Inject('HTTP_AXIOS')
     private readonly axios: AxiosInstance,
+    private readonly issueConverter: IssueConverter,
   ) {}
 
   public async createIssue(data: CreateIssue): Promise<Issue> {
-    const input = this.convertToJiraFormat(data);
+    const input = this.issueConverter.convert(data);
     const result = await this.client.issues.createIssue(input);
     if (
       data.issue_type == 'Test' &&
@@ -32,160 +33,8 @@ export class JiraGateway {
   }
 
   public async updateIssue(data: UpdateIssue): Promise<void> {
-    const input = this.convertToJiraFormat(data);
-    console.log('this is the input new:');
-    console.dir(input);
+    const input = this.issueConverter.convert(data);
     await this.client.issues.editIssue({ ...input, issueIdOrKey: data.id });
-  }
-
-  private convertDependency(dependency: Dependency): any {
-    switch (dependency.type.toLowerCase()) {
-      case 'tests':
-        return {
-          add: {
-            type: {
-              name: 'Test',
-              inward: 'is tested by',
-              outward: 'tests',
-            },
-            outwardIssue: {
-              key: dependency.key,
-            },
-          },
-        };
-      case 'tested':
-        return {
-          add: {
-            type: {
-              name: 'Test',
-              inward: 'is tested by',
-              outward: 'tests',
-            },
-            inwardIssue: {
-              key: dependency.key,
-            },
-          },
-        };
-      case 'blocks':
-        return {
-          add: {
-            type: {
-              name: 'Blocks',
-              inward: 'is blocked by',
-              outward: 'blocks',
-            },
-            outwardIssue: {
-              key: dependency.key,
-            },
-          },
-        };
-      case 'blocked':
-        return {
-          add: {
-            type: {
-              name: 'Blocks',
-              inward: 'is blocked by',
-              outward: 'blocks',
-            },
-            inwardIssue: {
-              key: dependency.key,
-            },
-          },
-        };
-      case 'relates':
-        return {
-          add: {
-            type: {
-              name: 'Relates',
-              inward: 'relates to',
-              outward: 'relates to',
-            },
-            outwardIssue: {
-              key: dependency.key,
-            },
-          },
-        };
-      case 'depends':
-        return {
-          add: {
-            type: {
-              name: 'Dependency',
-              inward: 'is a dependency for',
-              outward: 'blocks',
-            },
-            outwardIssue: {
-              key: dependency.key,
-            },
-          },
-        };
-      case 'dependent':
-        return {
-          add: {
-            type: {
-              name: 'Dependency',
-              inward: 'is a dependency for',
-              outward: 'blocks',
-            },
-            inwardIssue: {
-              key: dependency.key,
-            },
-          },
-        };
-      default:
-        throw `The dependency "${dependency.type}" does not exist`;
-    }
-  }
-
-  private convertToJiraFormat(data: CreateIssue): any {
-    return {
-      fields: {
-        issuetype: {
-          name: data.issue_type,
-        },
-        project: {
-          key: data.project_key,
-        },
-        summary: data.summary,
-        description: {
-          version: 1,
-          type: 'doc',
-          content: [
-            {
-              type: 'paragraph',
-              content: [
-                {
-                  type: 'text',
-                  text: data.description,
-                },
-              ],
-            },
-          ],
-        },
-        customfield_10040: {
-          version: 1,
-          type: 'doc',
-          content: [
-            {
-              type: 'paragraph',
-              content: [
-                {
-                  type: 'text',
-                  text: data.acceptance_criteria || ' ',
-                },
-              ],
-            },
-          ],
-        },
-        components: data.components,
-        labels: data.labels,
-        fixVersions: data.fix_versions,
-      },
-      update: {
-        issuelinks: (data.dependencies || []).map((dependency) =>
-          this.convertDependency(dependency),
-        ),
-      },
-    };
   }
 
   private async createSteps(
