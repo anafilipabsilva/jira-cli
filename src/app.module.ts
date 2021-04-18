@@ -1,9 +1,7 @@
 import { Module } from '@nestjs/common';
 import { CommandModule } from 'nestjs-command';
-import { CreateTestsCommand } from './commands/createTests.command';
 import { CreateIssuesCommand } from './commands/createIssues.command';
 import { UpdateIssuesCommand } from './commands/updateIssues.command';
-import { CreateTestsInteractor } from './interactors/createTests.interactor';
 import { CreateIssuesInteractor } from './interactors/createIssues.interactor';
 import { UpdateIssuesInteractor } from './interactors/updateIssues.interactor';
 import { FileService } from './services/file.service';
@@ -34,8 +32,6 @@ const axiosProvider = {
   imports: [CommandModule],
   controllers: [],
   providers: [
-    CreateTestsCommand,
-    CreateTestsInteractor,
     CreateIssuesCommand,
     CreateIssuesInteractor,
     UpdateIssuesCommand,
