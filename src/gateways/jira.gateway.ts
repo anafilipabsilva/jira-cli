@@ -37,23 +37,27 @@ export class JiraGateway {
     await this.client.issues.editIssue({ ...input, issueIdOrKey: data.id });
   }
 
+  public async getIssue(id: string): Promise<Issue> {
+    const input = {
+      issueIdOrKey: id,
+      fields: ['project', 'issuetype', 'summary', 'description', 'customfield_10040', 'components', 'labels', 'fixVersions', 'issuelinks']
+    };
+    const result = await this.client.issues.getIssue(input);
+    if (result.fields['issuetype'].name == 'Test') {
+      const steps = await this.getSteps(result.id);
+      console.log('Steps');
+      console.log(steps);
+    }
+    return result as Issue;
+  }
+
   private async createSteps(
     steps: Step[],
     issueId: string,
     testType: string,
   ): Promise<any> {
-    const token = await this.axios
-      .post('https://xray.cloud.xpand-it.com/api/v2/authenticate', {
-        client_id: process.env.XRAY_CLIENT_ID,
-        client_secret: process.env.XRAY_CLIENT_SECRET,
-      })
-      .then((response) => {
-        return response.data;
-      })
-      .catch((error) => {
-        console.log(error);
-        return null;
-      });
+
+    const token = await this.getAuthToken();
 
     const graphQLClient = new GraphQLClient(
       'https://xray.cloud.xpand-it.com/api/v2/graphql',
@@ -93,5 +97,54 @@ export class JiraGateway {
     `;
       await graphQLClient.request(query);
     }
+  }
+
+  private async getSteps(issueId: string): Promise<any> {
+    const token = await this.getAuthToken();
+
+    const graphQLClient = new GraphQLClient(
+      'https://xray.cloud.xpand-it.com/api/v2/graphql',
+      {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      },
+    );
+    const query = gql`
+      { getTest(issueId: "${issueId}") { 
+        issueId
+        testType {
+          name
+          kind
+        }
+        steps { 
+            id 
+            data 
+            action 
+            result 
+            attachments { 
+              id 
+              filename 
+            } 
+          } 
+        }
+      }
+    `;
+    return await graphQLClient.request(query);
+  }
+
+  private async getAuthToken(): Promise<any> {
+    return await this.axios
+      .post('https://xray.cloud.xpand-it.com/api/v2/authenticate', {
+        client_id: process.env.XRAY_CLIENT_ID,
+        client_secret: process.env.XRAY_CLIENT_SECRET,
+      })
+      .then((response) => {
+        return response.data;
+      })
+      .catch((error) => {
+        console.log(error);
+        return null;
+      });
   }
 }

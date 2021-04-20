@@ -10,6 +10,8 @@ import { Version3Client } from 'jira.js';
 import axios from 'axios';
 import 'dotenv/config';
 import { IssueConverter } from './gateways/issue.converter';
+import { GetIssueCommand } from './commands/getIssue.command';
+import { GetIssueInteractor } from './interactors/getIssue.interactor';
 
 const jiraClientProvider = {
   provide: Version3Client,
@@ -37,6 +39,8 @@ const axiosProvider = {
     CreateIssuesInteractor,
     UpdateIssuesCommand,
     UpdateIssuesInteractor,
+    GetIssueCommand,
+    GetIssueInteractor,
     FileService,
     JiraGateway,
     jiraClientProvider,
