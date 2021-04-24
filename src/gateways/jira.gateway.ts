@@ -20,7 +20,7 @@ export class JiraGateway {
   ) {}
 
   public async createIssue(data: CreateIssue): Promise<Issue> {
-    const input = this.issueConverter.convert(data);
+    const input = this.issueConverter.convertToJiraFormat(data);
     const result = await this.client.issues.createIssue(input);
     if (
       data.issue_type == 'Test' &&
@@ -33,22 +33,21 @@ export class JiraGateway {
   }
 
   public async updateIssue(data: UpdateIssue): Promise<void> {
-    const input = this.issueConverter.convert(data);
+    const input = this.issueConverter.convertToJiraFormat(data);
     await this.client.issues.editIssue({ ...input, issueIdOrKey: data.id });
   }
 
-  public async getIssue(id: string): Promise<Issue> {
+  public async getIssue(id: string, getSteps = true): Promise<UpdateIssue> {
     const input = {
       issueIdOrKey: id,
       fields: ['project', 'issuetype', 'summary', 'description', 'customfield_10040', 'components', 'labels', 'fixVersions', 'issuelinks']
     };
     const result = await this.client.issues.getIssue(input);
-    if (result.fields['issuetype'].name == 'Test') {
-      const steps = await this.getSteps(result.id);
-      console.log('Steps');
-      console.log(steps);
+    let steps;
+    if (result.fields['issuetype'].name == 'Test' && getSteps) {
+      steps = await this.getSteps(result.id);
     }
-    return result as Issue;
+    return this.issueConverter.convertResult(result, steps);
   }
 
   private async createSteps(

@@ -1,12 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { CreateIssue, Dependency } from 'src/entities/issue.entity';
+import { IssueBean } from 'jira.js/out/version2/models';
+import { Component, CreateIssue, Dependency, Step, UpdateIssue, FixVersion } from 'src/entities/issue.entity';
 
 @Injectable()
 export class IssueConverter {
-  public convert(issue: CreateIssue) {
-    return this.convertToJiraFormat(issue);
-  }
-
   private convertDependency(dependency: Dependency): any {
     switch (dependency.type.toLowerCase()) {
       case 'tests':
@@ -105,7 +102,7 @@ export class IssueConverter {
     }
   }
 
-  private convertToJiraFormat(data: CreateIssue): any {
+  public convertToJiraFormat(data: CreateIssue): any {
     const fields = {};
     fields['issuetype'] = data.issue_type && {
       name: data.issue_type,
@@ -155,5 +152,71 @@ export class IssueConverter {
       fields,
       update,
     };
+  }
+
+  public convertResult(data: IssueBean, steps: any): UpdateIssue {
+    const issue = new UpdateIssue();
+
+    issue.id = data.id;
+    issue.key = data.key;
+    issue.project_key = data.fields['project'].key;
+    issue.issue_type = data.fields['issuetype'].name;
+    issue.summary = data.fields['summary'];
+
+    if (data.fields['description'] != null) {
+      issue.description = data.fields['description'].content[0].content[0].text;
+    } else {
+      issue.description = '';
+    }
+
+    if (data.fields['customfield_10040'] != null) {
+      issue.acceptance_criteria = data.fields['customfield_10040'].content[0].content[0].text;
+    } else {
+      issue.acceptance_criteria = '';
+    }
+
+    issue.components = (data.fields['components'] || []).map((component) => {
+      const c = new Component();
+      c.name = component.name;
+      return c;
+    });
+
+    issue.labels = (data.fields['labels'] || []).map((label) => {
+      return label;
+    });
+
+    issue.fix_versions = (data.fields['fixVersions'] || []).map((fixVersion) => {
+      const fv = new FixVersion();
+      fv.name = fixVersion.name;
+      return fv;
+    });
+
+    issue.dependencies = (data.fields['issuelinks'] || []).map((issuelink) => {
+      const dependency = new Dependency();
+      if (issuelink.hasOwnProperty('outwardIssue')) {
+        dependency.type = issuelink.type['outward'];
+        dependency.key = issuelink.outwardIssue['key'];
+      }
+      if (issuelink.hasOwnProperty('inwardIssue')) {
+        dependency.type = issuelink.type['inward'];
+        dependency.key = issuelink.inwardIssue['key'];
+      }
+      return dependency;
+    });
+
+    if (steps == null) {
+      issue.test_type = '';
+      issue.steps = [];
+    } else {
+      issue.test_type = steps.getTest['testType'].name;
+      issue.steps = steps.getTest['steps'].map((step) => {
+        const s = new Step();
+        s.action = step.action;
+        s.data = step.data;
+        s.result = step.result;
+        return s;
+      });
+    }
+    return issue;
   }
 }

@@ -33,6 +33,7 @@ export class CreateIssue {
 
 export class UpdateIssue extends CreateIssue {
   id: string;
+  key: string;
 }
 
 export class Issue {
