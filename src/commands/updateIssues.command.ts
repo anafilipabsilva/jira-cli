@@ -22,5 +22,7 @@ export class UpdateIssuesCommand {
     filepath: string,
   ) {
     const result = await this.updateIssuesInteractor.call(filepath);
+    console.log('Issues updated successfully');
+    console.log(result);
   }
 }

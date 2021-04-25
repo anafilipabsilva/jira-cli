@@ -1,38 +1,41 @@
 [
     {
-        "project_key": "AP",
-        "issue_type": "Test",
-        "summary": "Test number #2",
-        "description": "This is a test description",
-        "acceptance_criteria": "Test acceptance criteria",
+        "id": "AP-53",
+        "summary": "Test updated second round",
+        "description": "Description for an update",
+        "steps": [
+            {
+                "action": "- New step",
+                "data": "New data",
+                "result": "- New result"
+            },
+            {
+                "action": "- Second one",
+                "data": "Data for two",
+                "result": "- Another success test"
+            }
+        ]
+    },
+    {
+        "id": "AP-54",
+        "acceptance_criteria": "New second acceptance criteria",
         "components": [
             {
-                "name": "CRM Bridges"
+                "name": "Integrations UI"
             }
         ],
-        "labels": ["asgard"],
-        "fix_versions": [
-            {
-                "name": "Spring'21"
-            }
-        ],
+        "labels": ["rivendell"],
         "dependencies": [
             {
-                "type": "relates",
+                "type": "blocks",
                 "key": "AP-2"
             }
         ],
         "steps": [
             {
-                "action": "- Given I have a test\\n- When I want to do something",
-                "data": "Random data",
-                "result": "- Then it should happen"
-            },
-            {
-                "action": "- Given I have a second test\\n- When I want to do something",
-                "data": "Random second data",
-                "result": "- Then it should happen for the second time"
+                "action": "- First step",
+                "result": "- First result"
             }
-        ],
-        "test_type": "Manual"
-    }]
+        ]
+    }
+]

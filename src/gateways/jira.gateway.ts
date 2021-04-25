@@ -27,14 +27,23 @@ export class JiraGateway {
       data.steps != null &&
       data.steps.length >= 1
     ) {
-      await this.createSteps(data.steps, result.id, data.test_type);
+      await this.addSteps(data.steps, result.id, data.test_type);
     }
     return result as Issue;
   }
 
-  public async updateIssue(data: UpdateIssue): Promise<void> {
+  public async updateIssue(data: UpdateIssue): Promise<Issue> {
     const input = this.issueConverter.convertToJiraFormat(data);
     await this.client.issues.editIssue({ ...input, issueIdOrKey: data.id });
+    const issueInfo = await this.getIssue(data.id, false);
+    if (data.steps != null && data.steps.length > 0) {
+      if (issueInfo.issue_type == 'Test') {
+        await this.addSteps(data.steps, issueInfo.id, issueInfo.test_type);
+      } else {
+        throw `There was an error while updating test steps on issue ${issueInfo.key}`;
+      }
+    }
+    return new Issue(issueInfo);
   }
 
   public async getIssue(id: string, getSteps = true): Promise<UpdateIssue> {
@@ -50,7 +59,7 @@ export class JiraGateway {
     return this.issueConverter.convertResult(result, steps);
   }
 
-  private async createSteps(
+  private async addSteps(
     steps: Step[],
     issueId: string,
     testType: string,
@@ -85,7 +94,7 @@ export class JiraGateway {
       mutation {
         addTestStep(
           issueId: "${issueId}"
-          step: { action: "${step.action}", data: "${step.data}", result: "${step.result}" }
+          step: { action: "${step.action || ''}", data: "${step.data || ''}", result: "${step.result || ''}" }
         ) {
           id
           action

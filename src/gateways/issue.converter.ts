@@ -159,6 +159,7 @@ export class IssueConverter {
 
     issue.id = data.id;
     issue.key = data.key;
+    issue.self = data.self;
     issue.project_key = data.fields['project'].key;
     issue.issue_type = data.fields['issuetype'].name;
     issue.summary = data.fields['summary'];

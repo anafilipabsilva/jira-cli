@@ -34,10 +34,19 @@ export class CreateIssue {
 export class UpdateIssue extends CreateIssue {
   id: string;
   key: string;
+  self: string;
 }
 
 export class Issue {
   id: string;
   key: string;
   self: string;
+
+  public constructor(data: Partial<Issue> = null) {
+    if (data != null) {
+      this.id = data.id;
+      this.key = data.key;
+      this.self = data.self;
+    }
+  }
 }
