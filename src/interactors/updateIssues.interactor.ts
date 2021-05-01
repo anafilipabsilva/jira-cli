@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { UpdateIssue } from 'src/entities/issue.entity';
+import { IssueData } from 'src/entities/issue.entity';
 import { FileService } from './../services/file.service';
 import { JiraGateway } from './../gateways/jira.gateway';
 
@@ -11,7 +11,7 @@ export class UpdateIssuesInteractor {
   ) {}
 
   async call(filepath: string) {
-    const issues = await this.fileService.readFile<UpdateIssue[]>(filepath);
+    const issues = await this.fileService.readFile<IssueData[]>(filepath);
 
     const result = [];
     for (const issue of issues) {

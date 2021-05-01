@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CreateIssue } from 'src/entities/issue.entity';
+import { IssueData } from 'src/entities/issue.entity';
 import { FileService } from './../services/file.service';
 import { JiraGateway } from './../gateways/jira.gateway';
 
@@ -11,7 +11,7 @@ export class CreateIssuesInteractor {
   ) {}
 
   async call(filepath: string) {
-    const issues = await this.fileService.readFile<CreateIssue[]>(filepath);
+    const issues = await this.fileService.readFile<IssueData[]>(filepath);
 
     const result = [];
     for (const issue of issues) {
@@ -22,13 +22,15 @@ export class CreateIssuesInteractor {
     return result;
   }
 
-  private validRequiredFields(issue: CreateIssue): void {
+  private validRequiredFields(issue: IssueData): void {
     const requiredFields = [
       'summary',
-      'description',
       'project_key',
       'issue_type',
     ];
+    if(issue.issue_type == 'Epic') {
+      requiredFields.push('epic_name');
+    }
     for (const field of requiredFields) {
       if (issue[field] == null) {
         throw `The required field "${field}" is not provided in the file`;

@@ -17,24 +17,25 @@ export class Step {
   result: string;
 }
 
-export class CreateIssue {
+export class IssueData {
   project_key: string;
   issue_type: string;
+  epic_name: string;
   summary: string;
   description: string;
   acceptance_criteria: string;
+  epic_link_id: string;
   components: Component[];
   labels: string[];
   fix_versions: FixVersion[];
+  feasability: string;
   dependencies: Dependency[];
   test_type: string;
   steps: Step[];
-}
-
-export class UpdateIssue extends CreateIssue {
   id: string;
   key: string;
   self: string;
+  status: string;
 }
 
 export class Issue {

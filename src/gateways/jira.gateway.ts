@@ -1,9 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
 import {
-  CreateIssue,
   Issue,
   Step,
-  UpdateIssue,
+  IssueData
 } from 'src/entities/issue.entity';
 import { Version3Client } from 'jira.js';
 import { AxiosInstance } from 'axios';
@@ -19,7 +18,7 @@ export class JiraGateway {
     private readonly issueConverter: IssueConverter,
   ) {}
 
-  public async createIssue(data: CreateIssue): Promise<Issue> {
+  public async createIssue(data: IssueData): Promise<Issue> {
     const input = this.issueConverter.convertToJiraFormat(data);
     const result = await this.client.issues.createIssue(input);
     if (
@@ -32,7 +31,7 @@ export class JiraGateway {
     return result as Issue;
   }
 
-  public async updateIssue(data: UpdateIssue): Promise<Issue> {
+  public async updateIssue(data: IssueData): Promise<Issue> {
     const input = this.issueConverter.convertToJiraFormat(data);
     await this.client.issues.editIssue({ ...input, issueIdOrKey: data.id });
     const issueInfo = await this.getIssue(data.id, false);
@@ -46,10 +45,10 @@ export class JiraGateway {
     return new Issue(issueInfo);
   }
 
-  public async getIssue(id: string, getSteps = true): Promise<UpdateIssue> {
+  public async getIssue(id: string, getSteps = true): Promise<IssueData> {
     const input = {
       issueIdOrKey: id,
-      fields: ['project', 'issuetype', 'summary', 'description', 'customfield_10040', 'components', 'labels', 'fixVersions', 'issuelinks']
+      fields: ['project', 'issuetype', 'summary', 'description', 'customfield_10040', 'customfield_10041', 'customfield_10011', 'status', 'customfield_10014', 'components', 'labels', 'fixVersions', 'issuelinks']
     };
     const result = await this.client.issues.getIssue(input);
     let steps;
