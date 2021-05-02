@@ -10,7 +10,7 @@ export class CreateIssuesCommand {
 
   @Command({
     command: 'create:issues <filepath>',
-    describe: 'Create issues from a file',
+    describe: 'Creates issues from a file',
     autoExit: true,
   })
   async create(

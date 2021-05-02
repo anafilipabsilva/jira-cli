@@ -1,16 +1,14 @@
-import { Command, Positional } from 'nestjs-command';
 import { Injectable } from '@nestjs/common';
+import { Command, Positional } from 'nestjs-command';
 import { GetIssueInteractor } from '../interactors/getIssue.interactor';
 
 @Injectable()
 export class GetIssueCommand {
-  constructor(
-    private readonly getIssueInteractor: GetIssueInteractor,
-  ) {}
+  constructor(private readonly getIssueInteractor: GetIssueInteractor) {}
 
   @Command({
     command: 'get:issue <id>',
-    describe: 'Get the information of an issue',
+    describe: 'Gets the information of an issue',
     autoExit: true,
   })
   async create(

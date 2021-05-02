@@ -10,7 +10,7 @@ export class UpdateIssuesCommand {
 
   @Command({
     command: 'update:issues <filepath>',
-    describe: 'Update issues from a file',
+    describe: 'Updates issues from a file',
     autoExit: true,
   })
   async update(
