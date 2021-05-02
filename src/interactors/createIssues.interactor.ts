@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { IssueData } from 'src/entities/issue.entity';
-import { FileService } from './../services/file.service';
 import { JiraGateway } from './../gateways/jira.gateway';
+import { FileService } from './../services/file.service';
 
 @Injectable()
 export class CreateIssuesInteractor {
@@ -23,12 +23,8 @@ export class CreateIssuesInteractor {
   }
 
   private validRequiredFields(issue: IssueData): void {
-    const requiredFields = [
-      'summary',
-      'project_key',
-      'issue_type',
-    ];
-    if(issue.issue_type == 'Epic') {
+    const requiredFields = ['summary', 'project_key', 'issue_type'];
+    if (issue.issue_type == 'Epic') {
       requiredFields.push('epic_name');
     }
     for (const field of requiredFields) {
