@@ -1,6 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { IssueBean } from 'jira.js/out/version2/models';
-import { Component, Dependency, Step, FixVersion, IssueData } from 'src/entities/issue.entity';
+import {
+  Component,
+  Dependency,
+  FixVersion,
+  IssueData,
+  Step,
+} from './../entities/issue.entity';
 
 @Injectable()
 export class IssueConverter {
@@ -112,7 +118,7 @@ export class IssueConverter {
     };
     fields['summary'] = data.summary;
     fields['customfield_10011'] = data.epic_name;
-    fields['customfield_10009'] = data.epic_link_id;
+    fields['customfield_10014'] = data.epic_link_id;
     fields['description'] = data.description && {
       version: 1,
       type: 'doc',
@@ -151,7 +157,7 @@ export class IssueConverter {
     fields['fixVersions'] = data.fix_versions;
     fields['customfield_10041'] = data.feasability && {
       value: data.feasability,
-    }
+    };
     const update = {};
     update['issuelinks'] = (data.dependencies || []).map((dependency) =>
       this.convertDependency(dependency),
@@ -162,7 +168,7 @@ export class IssueConverter {
     };
   }
 
-  public convertResult(data: IssueBean, steps: any): IssueData {
+  public convertResult(data: IssueBean, steps = null): IssueData {
     const issue = new IssueData();
 
     issue.id = data.id;
@@ -171,23 +177,36 @@ export class IssueConverter {
     issue.project_key = data.fields['project'].key;
     issue.issue_type = data.fields['issuetype'].name;
     issue.status = data.fields['status'].name;
-    if (data.fields['issuetype'].name == "Epic") {
+    if (data.fields['issuetype'].name == 'Epic') {
       issue.epic_name = data.fields['customfield_10011'];
-    } 
-    if (data.fields['issuetype'].name != "Epic" && data.fields['customfield_10014'] != null) {
+    }
+    if (
+      data.fields['issuetype'].name != 'Epic' &&
+      data.fields['customfield_10014'] != null
+    ) {
       issue.epic_link_id = data.fields['customfield_10014'];
-    } 
+    }
     issue.summary = data.fields['summary'];
-    if (data.fields['description'] != null) {
+    if (
+      data.fields['description'] != null &&
+      data.fields['description'].length > 0
+    ) {
       issue.description = data.fields['description'].content[0].content[0].text;
-    } 
-    if (data.fields['customfield_10040'] != null) {
-      issue.acceptance_criteria = data.fields['customfield_10040'].content[0].content[0].text;
+    }
+    if (
+      data.fields['customfield_10040'] != null &&
+      data.fields['customfield_10040'].length > 0
+    ) {
+      issue.acceptance_criteria =
+        data.fields['customfield_10040'].content[0].content[0].text;
     }
     if (data.fields['customfield_10041'] != null) {
       issue.feasability = data.fields['customfield_10041'].value;
     }
-    if (data.fields['components'] != null && data.fields['components'].length > 0) {
+    if (
+      data.fields['components'] != null &&
+      data.fields['components'].length > 0
+    ) {
       issue.components = data.fields['components'].map((component) => {
         const c = new Component();
         c.name = component.name;
@@ -199,14 +218,20 @@ export class IssueConverter {
         return label;
       });
     }
-    if (data.fields['fixVersions'] != null && data.fields['fixVersions'].length > 0) {
+    if (
+      data.fields['fixVersions'] != null &&
+      data.fields['fixVersions'].length > 0
+    ) {
       issue.fix_versions = data.fields['fixVersions'].map((fixVersion) => {
         const fv = new FixVersion();
         fv.name = fixVersion.name;
         return fv;
       });
     }
-    if (data.fields['issuelinks'] != null && data.fields['issuelinks'].length > 0) {
+    if (
+      data.fields['issuelinks'] != null &&
+      data.fields['issuelinks'].length > 0
+    ) {
       issue.dependencies = data.fields['issuelinks'].map((issuelink) => {
         const dependency = new Dependency();
         if (issuelink.hasOwnProperty('outwardIssue')) {
