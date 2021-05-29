@@ -1,12 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
-import {
-  Issue,
-  Step,
-  IssueData
-} from 'src/entities/issue.entity';
-import { Version3Client } from 'jira.js';
 import { AxiosInstance } from 'axios';
-import { GraphQLClient, gql } from 'graphql-request';
+import { gql, GraphQLClient } from 'graphql-request';
+import { Version3Client } from 'jira.js';
+import { Issue, IssueData, Step } from './../entities/issue.entity';
 import { IssueConverter } from './issue.converter';
 
 @Injectable()
@@ -22,7 +18,7 @@ export class JiraGateway {
     const input = this.issueConverter.convertToJiraFormat(data);
     const result = await this.client.issues.createIssue(input);
     if (
-      data.issue_type == 'Test' &&
+      data.issue_type == 'Xray Test' &&
       data.steps != null &&
       data.steps.length >= 1
     ) {
@@ -36,7 +32,7 @@ export class JiraGateway {
     await this.client.issues.editIssue({ ...input, issueIdOrKey: data.id });
     const issueInfo = await this.getIssue(data.id, false);
     if (data.steps != null && data.steps.length > 0) {
-      if (issueInfo.issue_type == 'Test') {
+      if (issueInfo.issue_type == 'Xray Test') {
         await this.addSteps(data.steps, issueInfo.id, issueInfo.test_type);
       } else {
         throw `There was an error while updating test steps on issue ${issueInfo.key}`;
@@ -48,7 +44,21 @@ export class JiraGateway {
   public async getIssue(id: string, getSteps = true): Promise<IssueData> {
     const input = {
       issueIdOrKey: id,
-      fields: ['project', 'issuetype', 'summary', 'description', 'customfield_10040', 'customfield_10041', 'customfield_10011', 'status', 'customfield_10014', 'components', 'labels', 'fixVersions', 'issuelinks']
+      fields: [
+        'project',
+        'issuetype',
+        'summary',
+        'description',
+        'customfield_10040',
+        'customfield_10041',
+        'customfield_10011',
+        'status',
+        'customfield_10014',
+        'components',
+        'labels',
+        'fixVersions',
+        'issuelinks',
+      ],
     };
     const result = await this.client.issues.getIssue(input);
     let steps;
@@ -58,12 +68,61 @@ export class JiraGateway {
     return this.issueConverter.convertResult(result, steps);
   }
 
+  public async listIssues(
+    projectId: string,
+    issueType: string,
+    fixVersion = null,
+  ): Promise<IssueData[]> {
+    const input = {
+      fields: [
+        'project',
+        'issuetype',
+        'summary',
+        'description',
+        'customfield_10040',
+        'customfield_10041',
+        'customfield_10011',
+        'status',
+        'customfield_10014',
+        'components',
+        'labels',
+        'fixVersions',
+        'issuelinks',
+      ],
+    };
+    if (fixVersion == null) {
+      input[
+        'jql'
+      ] = `project = '${projectId}' AND issueType = '${issueType}' ORDER BY key ASC`;
+    } else {
+      input[
+        'jql'
+      ] = `project = ${projectId} AND issueType = ${issueType} AND fixVersion = ${fixVersion} ORDER BY key ASC`;
+    }
+    const result = await this.client.issueSearch.searchForIssuesUsingJql(input);
+    const convertedResult = [];
+    for (const issue of result.issues) {
+      convertedResult.push(this.issueConverter.convertResult(issue));
+    }
+    return convertedResult;
+  }
+
+  // public async updateEpicIssuesFeasability(
+  //   projectId: string,
+  //   fixVersion: string,
+  // ): Promise<void> {
+  //   const epics = this.listIssues(projectId, 'Epic', fixVersion);
+  //   // for (const epic of epics) {
+
+  //   // }
+  //   // return convertedResult;
+  // }
+
   private async addSteps(
     steps: Step[],
     issueId: string,
     testType: string,
   ): Promise<any> {
-
     const token = await this.getAuthToken();
 
     const graphQLClient = new GraphQLClient(
@@ -93,7 +152,9 @@ export class JiraGateway {
       mutation {
         addTestStep(
           issueId: "${issueId}"
-          step: { action: "${step.action || ''}", data: "${step.data || ''}", result: "${step.result || ''}" }
+          step: { action: "${step.action || ''}", data: "${
+        step.data || ''
+      }", result: "${step.result || ''}" }
         ) {
           id
           action

@@ -1,41 +1,21 @@
 [
     {
-        "id": "AP-53",
-        "summary": "Test updated second round",
-        "description": "Description for an update",
-        "steps": [
-            {
-                "action": "- New step",
-                "data": "New data",
-                "result": "- New result"
-            },
-            {
-                "action": "- Second one",
-                "data": "Data for two",
-                "result": "- Another success test"
-            }
-        ]
-    },
-    {
-        "id": "AP-54",
-        "acceptance_criteria": "New second acceptance criteria",
+        "project_key": "INT",
+        "issue_type": "Test",
+        "summary": "TC [AUTOMATED] Helpscout - Push contact update - Responds with 5xx",
+        "description": "This test case intends to validate that when a 5xx error is sent by Helpscout, it is expected to receive a 400 error",
+        "acceptance_criteria": "This is an acceptance test",
         "components": [
             {
-                "name": "Integrations UI"
-            }
-        ],
-        "labels": ["rivendell"],
-        "dependencies": [
-            {
-                "type": "blocks",
-                "key": "AP-2"
+                "name": "CRM Bridges"
             }
         ],
         "steps": [
             {
-                "action": "- First step",
-                "result": "- First result"
+                "action": "- Given I have a valid request\\n- When the request is sent to the endpoint\\n- And the response is a 5xx error",
+                "result": "- Then a 400 Bad Request should be received"
             }
-        ]
+        ],
+        "test_type": "Manual"
     }
 ]

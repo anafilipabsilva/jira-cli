@@ -42,7 +42,7 @@ export class IssueConverter {
         return {
           add: {
             type: {
-              name: 'Blocks',
+              name: 'Blocker',
               inward: 'is blocked by',
               outward: 'blocks',
             },
@@ -55,7 +55,7 @@ export class IssueConverter {
         return {
           add: {
             type: {
-              name: 'Blocks',
+              name: 'Blocker',
               inward: 'is blocked by',
               outward: 'blocks',
             },
@@ -134,7 +134,7 @@ export class IssueConverter {
         },
       ],
     };
-    fields['customfield_10040'] = data.acceptance_criteria && {
+    fields['customfield_10036'] = data.acceptance_criteria && {
       version: 1,
       type: 'doc',
       content: [
@@ -155,7 +155,7 @@ export class IssueConverter {
     fields['components'] = data.components;
     fields['labels'] = data.labels;
     fields['fixVersions'] = data.fix_versions;
-    fields['customfield_10041'] = data.feasability && {
+    fields['customfield_10039'] = data.feasability && {
       value: data.feasability,
     };
     const update = {};

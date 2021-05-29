@@ -12,6 +12,8 @@ import 'dotenv/config';
 import { IssueConverter } from './gateways/issue.converter';
 import { GetIssueCommand } from './commands/getIssue.command';
 import { GetIssueInteractor } from './interactors/getIssue.interactor';
+import { ListIssuesCommand } from './commands/listIssues.command';
+import { ListIssuesInteractor } from './interactors/listIssues.interactor';
 
 const jiraClientProvider = {
   provide: Version3Client,
@@ -41,6 +43,8 @@ const axiosProvider = {
     UpdateIssuesInteractor,
     GetIssueCommand,
     GetIssueInteractor,
+    ListIssuesCommand,
+    ListIssuesInteractor,
     FileService,
     JiraGateway,
     jiraClientProvider,
