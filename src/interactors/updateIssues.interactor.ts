@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { IssueData } from 'src/entities/issue.entity';
-import { FileService } from './../services/file.service';
 import { JiraGateway } from './../gateways/jira.gateway';
+import { FileService } from './../services/file.service';
 
 @Injectable()
 export class UpdateIssuesInteractor {
