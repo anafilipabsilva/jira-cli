@@ -11,7 +11,7 @@ export class UpdateEpicIssuesFeasabilityCommand {
   @Command({
     command: 'update:issues_feasability',
     describe:
-      'Adds a label to the issues of an epic (for a certain project and release/fix version) depending on the epic feasability',
+      'Adds a label (spillover or descoped) to the issues of an epic (for a certain project and release/fix version) if the epic feasability is Yellow or Red (respectively)',
     autoExit: true,
   })
   async create(
@@ -38,6 +38,13 @@ export class UpdateEpicIssuesFeasabilityCommand {
       projectId,
       release,
     );
-    console.dir(result);
+
+    if (result.length == 0) {
+      console.log(
+        'There are no issues to add the labels spillover or descoped',
+      );
+    } else {
+      console.log(result);
+    }
   }
 }

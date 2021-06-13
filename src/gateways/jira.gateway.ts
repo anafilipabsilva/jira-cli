@@ -111,7 +111,7 @@ export class JiraGateway {
   public async updateEpicIssuesFeasability(
     projectId: string,
     release: string,
-  ): Promise<IssueData[]> {
+  ): Promise<Issue[]> {
     const epics = await this.searchIssues(
       projectId,
       'Epic',
