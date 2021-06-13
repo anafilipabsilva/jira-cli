@@ -1,26 +1,26 @@
 import { JiraGateway } from 'src/gateways/jira.gateway';
-import { ListIssuesInteractor } from './listIssues.interactor';
+import { SearchIssuesInteractor } from './searchIssues.interactor';
 
-describe('GetIssueInteractor', () => {
-  let interactor: ListIssuesInteractor;
+describe('SearchIssuesInteractor', () => {
+  let interactor: SearchIssuesInteractor;
 
-  const mockListIssues = jest.fn();
+  const mockSearchIssues = jest.fn();
   const jiraGatewayMock = ({
-    listIssues: mockListIssues,
+    searchIssues: mockSearchIssues,
   } as unknown) as JiraGateway;
 
   beforeEach(async () => {
-    mockListIssues.mockClear();
-    interactor = new ListIssuesInteractor(jiraGatewayMock);
+    mockSearchIssues.mockClear();
+    interactor = new SearchIssuesInteractor(jiraGatewayMock);
   });
 
   describe('when the call method is executed', () => {
     describe('and three arguments are given', () => {
-      it('should call the list issues method', async () => {
+      it('should call the search issues method', async () => {
         await interactor.call('project-id', 'issue-type', 'fix-version');
 
-        expect(mockListIssues.mock.calls.length).toBe(1);
-        expect(mockListIssues.mock.calls[0]).toEqual([
+        expect(mockSearchIssues.mock.calls.length).toBe(1);
+        expect(mockSearchIssues.mock.calls[0]).toEqual([
           'project-id',
           'issue-type',
           'fix-version',
@@ -28,7 +28,7 @@ describe('GetIssueInteractor', () => {
       });
 
       it('should return the list of issues', async () => {
-        mockListIssues.mockImplementationOnce(() => ({ prop: 'issue-id' }));
+        mockSearchIssues.mockImplementationOnce(() => ({ prop: 'issue-id' }));
 
         expect(
           await interactor.call('project-id', 'issue-type', 'fix-version'),
@@ -37,11 +37,11 @@ describe('GetIssueInteractor', () => {
     });
 
     describe('and only two arguments are given', () => {
-      it('should call the list issues method', async () => {
+      it('should call the seatch issues method', async () => {
         await interactor.call('project-id', 'issue-type');
 
-        expect(mockListIssues.mock.calls.length).toBe(1);
-        expect(mockListIssues.mock.calls[0]).toEqual([
+        expect(mockSearchIssues.mock.calls.length).toBe(1);
+        expect(mockSearchIssues.mock.calls[0]).toEqual([
           'project-id',
           'issue-type',
           null,
@@ -49,7 +49,7 @@ describe('GetIssueInteractor', () => {
       });
 
       it('should return the list of issues', async () => {
-        mockListIssues.mockImplementationOnce(() => ({ prop: 'issue-id' }));
+        mockSearchIssues.mockImplementationOnce(() => ({ prop: 'issue-id' }));
 
         expect(await interactor.call('project-id', 'issue-type')).toEqual({
           prop: 'issue-id',

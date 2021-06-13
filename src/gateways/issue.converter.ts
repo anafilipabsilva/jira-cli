@@ -1,11 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { IssueBean } from 'jira.js/out/version2/models';
 import {
-  Component,
   Dependency,
-  FixVersion,
+
   IssueData,
-  Step,
+  Step
 } from './../entities/issue.entity';
 
 @Injectable()
@@ -117,8 +116,8 @@ export class IssueConverter {
       key: data.project_key,
     };
     fields['summary'] = data.summary;
-    fields['customfield_10011'] = data.epic_name;
-    fields['customfield_10014'] = data.epic_link_id;
+    fields['customfield_10008'] = data.epic_name;
+    fields['customfield_10009'] = data.epic_link_id;
     fields['description'] = data.description && {
       version: 1,
       type: 'doc',
@@ -134,7 +133,7 @@ export class IssueConverter {
         },
       ],
     };
-    fields['customfield_10036'] = data.acceptance_criteria && {
+    fields['customfield_10503'] = data.acceptance_criteria && {
       version: 1,
       type: 'doc',
       content: [
@@ -155,7 +154,7 @@ export class IssueConverter {
     fields['components'] = data.components;
     fields['labels'] = data.labels;
     fields['fixVersions'] = data.fix_versions;
-    fields['customfield_10039'] = data.feasability && {
+    fields['customfield_13031'] = data.feasability && {
       value: data.feasability,
     };
     const update = {};
@@ -182,35 +181,33 @@ export class IssueConverter {
     }
     if (
       data.fields['issuetype'].name != 'Epic' &&
-      data.fields['customfield_10014'] != null
+      data.fields['customfield_10009'] != null
     ) {
-      issue.epic_link_id = data.fields['customfield_10014'];
+      issue.epic_link_id = data.fields['customfield_10009'];
     }
     issue.summary = data.fields['summary'];
     if (
       data.fields['description'] != null &&
-      data.fields['description'].length > 0
+      data.fields['description'].content.length > 0
     ) {
       issue.description = data.fields['description'].content[0].content[0].text;
     }
     if (
-      data.fields['customfield_10040'] != null &&
-      data.fields['customfield_10040'].length > 0
+      data.fields['customfield_10503'] != null &&
+      data.fields['customfield_10503'].content.length > 0
     ) {
       issue.acceptance_criteria =
-        data.fields['customfield_10040'].content[0].content[0].text;
+        data.fields['customfield_10503'].content[0].content[0].text;
     }
-    if (data.fields['customfield_10041'] != null) {
-      issue.feasability = data.fields['customfield_10041'].value;
+    if (data.fields['customfield_13031'] != null) {
+      issue.feasability = data.fields['customfield_13031'].value;
     }
     if (
       data.fields['components'] != null &&
       data.fields['components'].length > 0
     ) {
       issue.components = data.fields['components'].map((component) => {
-        const c = new Component();
-        c.name = component.name;
-        return c;
+        return component.name;
       });
     }
     if (data.fields['labels'] != null && data.fields['labels'].length > 0) {
@@ -223,9 +220,7 @@ export class IssueConverter {
       data.fields['fixVersions'].length > 0
     ) {
       issue.fix_versions = data.fields['fixVersions'].map((fixVersion) => {
-        const fv = new FixVersion();
-        fv.name = fixVersion.name;
-        return fv;
+        return fixVersion.name;
       });
     }
     if (
@@ -233,19 +228,19 @@ export class IssueConverter {
       data.fields['issuelinks'].length > 0
     ) {
       issue.dependencies = data.fields['issuelinks'].map((issuelink) => {
-        const dependency = new Dependency();
+        const dependency = {};
         if (issuelink.hasOwnProperty('outwardIssue')) {
-          dependency.type = issuelink.type['outward'];
-          dependency.key = issuelink.outwardIssue['key'];
+          dependency['type'] = issuelink.type['outward'];
+          dependency['key'] = issuelink.outwardIssue['key'];
         }
         if (issuelink.hasOwnProperty('inwardIssue')) {
-          dependency.type = issuelink.type['inward'];
-          dependency.key = issuelink.inwardIssue['key'];
+          dependency['type'] = issuelink.type['inward'];
+          dependency['key'] = issuelink.inwardIssue['key'];
         }
         return dependency;
       });
     }
-    if (steps != null && steps.length > 0) {
+    if (steps != null && steps.getTest['steps'].length > 0) {
       issue.test_type = steps.getTest['testType'].name;
       issue.steps = steps.getTest['steps'].map((step) => {
         const s = new Step();

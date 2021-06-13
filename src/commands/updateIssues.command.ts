@@ -1,5 +1,5 @@
-import { Command, Positional } from 'nestjs-command';
 import { Injectable } from '@nestjs/common';
+import { Command, Option } from 'nestjs-command';
 import { UpdateIssuesInteractor } from '../interactors/updateIssues.interactor';
 
 @Injectable()
@@ -9,15 +9,17 @@ export class UpdateIssuesCommand {
   ) {}
 
   @Command({
-    command: 'update:issues <filepath>',
+    command: 'update:issues',
     describe: 'Updates issues from a file',
     autoExit: true,
   })
   async update(
-    @Positional({
+    @Option({
       name: 'filepath',
       describe: 'The path to the file containing the issues to be updated',
       type: 'string',
+      alias: 'f',
+      required: true,
     })
     filepath: string,
   ) {

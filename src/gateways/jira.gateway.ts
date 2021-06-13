@@ -44,62 +44,63 @@ export class JiraGateway {
   public async getIssue(id: string, getSteps = true): Promise<IssueData> {
     const input = {
       issueIdOrKey: id,
-      fields: [
-        'project',
-        'issuetype',
-        'summary',
-        'description',
-        'customfield_10040',
-        'customfield_10041',
-        'customfield_10011',
-        'status',
-        'customfield_10014',
-        'components',
-        'labels',
-        'fixVersions',
-        'issuelinks',
-      ],
     };
     const result = await this.client.issues.getIssue(input);
     let steps;
-    if (result.fields['issuetype'].name == 'Test' && getSteps) {
+    if (result.fields['issuetype'].name == 'Xray Test' && getSteps) {
       steps = await this.getSteps(result.id);
     }
     return this.issueConverter.convertResult(result, steps);
   }
 
-  public async listIssues(
+  public async searchIssues(
     projectId: string,
-    issueType: string,
-    fixVersion = null,
+    type = null,
+    release = null,
+    status = null,
+    feasability = null,
+    epicLinkId = null,
+    label = null,
   ): Promise<IssueData[]> {
-    const input = {
-      fields: [
-        'project',
-        'issuetype',
-        'summary',
-        'description',
-        'customfield_10040',
-        'customfield_10041',
-        'customfield_10011',
-        'status',
-        'customfield_10014',
-        'components',
-        'labels',
-        'fixVersions',
-        'issuelinks',
-      ],
-    };
-    if (fixVersion == null) {
-      input[
-        'jql'
-      ] = `project = '${projectId}' AND issueType = '${issueType}' ORDER BY key ASC`;
-    } else {
-      input[
-        'jql'
-      ] = `project = ${projectId} AND issueType = ${issueType} AND fixVersion = ${fixVersion} ORDER BY key ASC`;
+    if (feasability != null) {
+      switch (feasability.toLowerCase()) {
+        case 'green':
+          feasability = 'Green - Looks Possible';
+          break;
+        case 'yellow':
+          feasability = 'Yellow - Stretch / Maybe';
+          break;
+        case 'orange':
+          feasability = 'Orange - Needs More Definition';
+          break;
+        case 'red':
+          feasability = 'Red - Not Possible';
+          break;
+      }
     }
+
+    const optionalParams = {
+      issueType: type,
+      fixVersion: release,
+      status: status,
+      'cf[13031]': feasability,
+      'cf[10009]': epicLinkId,
+      labels: label,
+    };
+
+    let jqlQuery = `project = '${projectId}'`;
+    for (const key in optionalParams) {
+      if (optionalParams[key] != null) {
+        jqlQuery += ` AND ${key} = '${optionalParams[key]}'`;
+      }
+    }
+    jqlQuery += ` ORDER BY key ASC`;
+
+    const input = {};
+    input['jql'] = jqlQuery;
+
     const result = await this.client.issueSearch.searchForIssuesUsingJql(input);
+
     const convertedResult = [];
     for (const issue of result.issues) {
       convertedResult.push(this.issueConverter.convertResult(issue));
