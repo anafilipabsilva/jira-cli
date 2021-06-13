@@ -27,7 +27,7 @@ export class IssueData {
   epic_link_id: string;
   components: Component[];
   labels: string[];
-  fix_versions: FixVersion[];
+  releases: FixVersion[];
   feasability: string;
   dependencies: Dependency[];
   test_type: string;

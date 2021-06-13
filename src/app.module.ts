@@ -6,12 +6,14 @@ import { CommandModule } from 'nestjs-command';
 import { CreateIssuesCommand } from './commands/createIssues.command';
 import { GetIssueCommand } from './commands/getIssue.command';
 import { SearchIssuesCommand } from './commands/searchIssues.command';
+import { UpdateEpicIssuesFeasabilityCommand } from './commands/updateEpicIssuesFeasability.command';
 import { UpdateIssuesCommand } from './commands/updateIssues.command';
 import { IssueConverter } from './gateways/issue.converter';
 import { JiraGateway } from './gateways/jira.gateway';
 import { CreateIssuesInteractor } from './interactors/createIssues.interactor';
 import { GetIssueInteractor } from './interactors/getIssue.interactor';
 import { SearchIssuesInteractor } from './interactors/searchIssues.interactor';
+import { UpdateEpicIssuesFeasabilityInteractor } from './interactors/updateEpicIssuesFeasability.interactor';
 import { UpdateIssuesInteractor } from './interactors/updateIssues.interactor';
 import { FileService } from './services/file.service';
 
@@ -45,6 +47,8 @@ const axiosProvider = {
     GetIssueInteractor,
     SearchIssuesCommand,
     SearchIssuesInteractor,
+    UpdateEpicIssuesFeasabilityCommand,
+    UpdateEpicIssuesFeasabilityInteractor,
     FileService,
     JiraGateway,
     jiraClientProvider,

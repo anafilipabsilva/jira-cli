@@ -82,7 +82,7 @@ export class JiraGateway {
     const optionalParams = {
       issueType: type,
       fixVersion: release,
-      status: status,
+      statusCategory: status,
       'cf[13031]': feasability,
       'cf[10009]': epicLinkId,
       labels: label,
@@ -108,16 +108,74 @@ export class JiraGateway {
     return convertedResult;
   }
 
-  // public async updateEpicIssuesFeasability(
-  //   projectId: string,
-  //   fixVersion: string,
-  // ): Promise<void> {
-  //   const epics = this.listIssues(projectId, 'Epic', fixVersion);
-  //   // for (const epic of epics) {
+  public async updateEpicIssuesFeasability(
+    projectId: string,
+    release: string,
+  ): Promise<IssueData[]> {
+    const epics = await this.searchIssues(
+      projectId,
+      'Epic',
+      release,
+      null,
+      null,
+      null,
+      null,
+    );
 
-  //   // }
-  //   // return convertedResult;
-  // }
+    const redEpicStories = [];
+    const yellowEpicStories = [];
+    for (const epic of epics) {
+      if (!epic.feasability) {
+        continue;
+      }
+      if (epic.feasability.includes('Red')) {
+        redEpicStories.push(
+          await this.searchIssues(
+            projectId,
+            'Story',
+            null,
+            'To Do',
+            null,
+            epic.key,
+            null,
+          ),
+        );
+      }
+
+      if (epic.feasability.includes('Yellow')) {
+        yellowEpicStories.push(
+          await this.searchIssues(
+            projectId,
+            'Story',
+            null,
+            'To Do',
+            null,
+            epic.key,
+            null,
+          ),
+        );
+      }
+    }
+
+    const finalResult = [];
+    for (const story of redEpicStories.flat()) {
+      const issue = {
+        id: story.key,
+        labels: ['descoped'],
+      } as IssueData;
+      finalResult.push(this.updateIssue(issue));
+    }
+
+    for (const story of yellowEpicStories.flat()) {
+      const issue = {
+        id: story.key,
+        labels: ['spillover'],
+      } as IssueData;
+      finalResult.push(this.updateIssue(issue));
+    }
+
+    return finalResult;
+  }
 
   private async addSteps(
     steps: Step[],

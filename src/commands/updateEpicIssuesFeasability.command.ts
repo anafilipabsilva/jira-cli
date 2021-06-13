@@ -1,38 +1,42 @@
 import { Injectable } from '@nestjs/common';
-import { Command, Positional } from 'nestjs-command';
-import { UpdateEpicIssuesFeasability } from '../interactors/updateEpicIssuesFeasability.interactor';
+import { Command, Option } from 'nestjs-command';
+import { UpdateEpicIssuesFeasabilityInteractor } from '../interactors/updateEpicIssuesFeasability.interactor';
 
 @Injectable()
-export class ListIssuesCommand {
+export class UpdateEpicIssuesFeasabilityCommand {
   constructor(
-    private readonly updateEpicIssuesFeasability: UpdateEpicIssuesFeasability,
+    private readonly updateEpicIssuesFeasabilityInteractor: UpdateEpicIssuesFeasabilityInteractor,
   ) {}
 
   @Command({
-    command: 'update:epic_issues:feasability <projectId> <fixVersion>',
+    command: 'update:issues_feasability',
     describe:
-      'Adds a label to the issues of an epic (for a certain project and fix version/release) depending on the epic feasability',
+      'Adds a label to the issues of an epic (for a certain project and release/fix version) depending on the epic feasability',
     autoExit: true,
   })
   async create(
-    @Positional({
+    @Option({
       name: 'projectId',
       describe:
         'The ID of the project (e.g. for the Integrations project, the id is INT or 10301)',
       type: 'string',
+      alias: 'p',
+      required: true,
     })
     projectId: string,
-    @Positional({
-      name: 'fixVersion',
+    @Option({
+      name: 'release',
       describe:
-        "The ID of the fix version/release (e.g. Summer'21 has the id 33440; you can find the id in the Releases section, by hovering the mouse on the fix version",
+        "The ID of the release/fix version (e.g. Summer'21 has the id 33440; you can find the id in the Releases section, by hovering the mouse on the fix version",
       type: 'string',
+      alias: 'r',
+      required: false,
     })
-    fixVersion: string,
+    release: string,
   ) {
-    const result = await this.updateEpicIssuesFeasability.call(
+    const result = await this.updateEpicIssuesFeasabilityInteractor.call(
       projectId,
-      fixVersion,
+      release,
     );
     console.dir(result);
   }

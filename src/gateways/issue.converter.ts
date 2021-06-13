@@ -1,11 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { IssueBean } from 'jira.js/out/version2/models';
-import {
-  Dependency,
-
-  IssueData,
-  Step
-} from './../entities/issue.entity';
+import { Dependency, IssueData, Step } from './../entities/issue.entity';
 
 @Injectable()
 export class IssueConverter {
@@ -153,7 +148,7 @@ export class IssueConverter {
     };
     fields['components'] = data.components;
     fields['labels'] = data.labels;
-    fields['fixVersions'] = data.fix_versions;
+    fields['fixVersions'] = data.releases;
     fields['customfield_13031'] = data.feasability && {
       value: data.feasability,
     };
@@ -219,7 +214,7 @@ export class IssueConverter {
       data.fields['fixVersions'] != null &&
       data.fields['fixVersions'].length > 0
     ) {
-      issue.fix_versions = data.fields['fixVersions'].map((fixVersion) => {
+      issue.releases = data.fields['fixVersions'].map((fixVersion) => {
         return fixVersion.name;
       });
     }
