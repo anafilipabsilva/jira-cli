@@ -111,8 +111,8 @@ export class IssueConverter {
       key: data.project_key,
     };
     fields['summary'] = data.summary;
-    fields['customfield_10008'] = data.epic_name;
-    fields['customfield_10009'] = data.epic_link_id;
+    fields[process.env.EPIC_NAME] = data.epic_name;
+    fields[process.env.EPIC_LINK_ID] = data.epic_link_id;
     fields['description'] = data.description && {
       version: 1,
       type: 'doc',
@@ -128,7 +128,7 @@ export class IssueConverter {
         },
       ],
     };
-    fields['customfield_10503'] = data.acceptance_criteria && {
+    fields[process.env.ACCEPTANCE_CRITERIA] = data.acceptance_criteria && {
       version: 1,
       type: 'doc',
       content: [
@@ -149,7 +149,7 @@ export class IssueConverter {
     fields['components'] = data.components;
     fields['labels'] = data.labels;
     fields['fixVersions'] = data.releases;
-    fields['customfield_13031'] = data.feasability && {
+    fields[process.env.FEASABILITY] = data.feasability && {
       value: data.feasability,
     };
     const update = {};
@@ -172,13 +172,13 @@ export class IssueConverter {
     issue.issue_type = data.fields['issuetype'].name;
     issue.status = data.fields['status'].name;
     if (data.fields['issuetype'].name == 'Epic') {
-      issue.epic_name = data.fields['customfield_10011'];
+      issue.epic_name = data.fields[process.env.EPIC_NAME];
     }
     if (
       data.fields['issuetype'].name != 'Epic' &&
-      data.fields['customfield_10009'] != null
+      data.fields[process.env.EPIC_LINK_ID] != null
     ) {
-      issue.epic_link_id = data.fields['customfield_10009'];
+      issue.epic_link_id = data.fields[process.env.EPIC_LINK_ID];
     }
     issue.summary = data.fields['summary'];
     if (
@@ -188,14 +188,14 @@ export class IssueConverter {
       issue.description = data.fields['description'].content[0].content[0].text;
     }
     if (
-      data.fields['customfield_10503'] != null &&
-      data.fields['customfield_10503'].content.length > 0
+      data.fields[process.env.ACCEPTANCE_CRITERIA] != null &&
+      data.fields[process.env.ACCEPTANCE_CRITERIA].content.length > 0
     ) {
       issue.acceptance_criteria =
-        data.fields['customfield_10503'].content[0].content[0].text;
+        data.fields[process.env.ACCEPTANCE_CRITERIA].content[0].content[0].text;
     }
-    if (data.fields['customfield_13031'] != null) {
-      issue.feasability = data.fields['customfield_13031'].value;
+    if (data.fields[process.env.FEASABILITY] != null) {
+      issue.feasability = data.fields[process.env.FEASABILITY].value;
     }
     if (
       data.fields['components'] != null &&
