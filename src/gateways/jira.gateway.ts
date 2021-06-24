@@ -132,7 +132,7 @@ export class JiraGateway {
         redEpicStories.push(
           await this.searchIssues(
             projectId,
-            'Story',
+            null,
             null,
             'To Do',
             null,
@@ -146,7 +146,7 @@ export class JiraGateway {
         yellowEpicStories.push(
           await this.searchIssues(
             projectId,
-            'Story',
+            null,
             null,
             'To Do',
             null,
@@ -160,10 +160,10 @@ export class JiraGateway {
     const finalResult = [];
     for (const story of redEpicStories.flat()) {
       const issue = {
-        id: story.key,
+        id: `${story.key}`,
         labels: ['descoped'],
       } as IssueData;
-      finalResult.push(this.updateIssue(issue));
+      finalResult.push(await this.updateIssue(issue));
     }
 
     for (const story of yellowEpicStories.flat()) {
@@ -171,7 +171,7 @@ export class JiraGateway {
         id: story.key,
         labels: ['spillover'],
       } as IssueData;
-      finalResult.push(this.updateIssue(issue));
+      finalResult.push(await this.updateIssue(issue));
     }
 
     return finalResult;
