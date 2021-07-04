@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { IssueData } from 'src/entities/issue.entity';
+import { IssueData } from './../entities/issue.entity';
+import { RequestException } from './../exceptions/request.exception';
 import { JiraGateway } from './../gateways/jira.gateway';
 import { FileService } from './../services/file.service';
 
@@ -19,7 +20,14 @@ export class UpdateIssuesInteractor {
         throw `The required field id is not provided in the file`;
       }
 
-      result.push(await this.jiraGateway.updateIssue(issue));
+      try {
+        result.push(await this.jiraGateway.updateIssue(issue));
+      } catch (e) {
+        console.error(`There was an error updating the issue: '${issue.id}'`);
+        if (e instanceof RequestException) {
+          console.error(e.message);
+        }
+      }
     }
     return result;
   }

@@ -24,7 +24,11 @@ export class UpdateIssuesCommand {
     filepath: string,
   ) {
     const result = await this.updateIssuesInteractor.call(filepath);
-    console.log('Issues updated successfully');
-    console.log(result);
+    if (result.length == 0) {
+      console.log('No issues updated');
+    } else {
+      console.log('Issues updated successfully');
+      console.log(result);
+    }
   }
 }
