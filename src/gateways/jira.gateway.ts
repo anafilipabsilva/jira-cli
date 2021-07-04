@@ -2,6 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { AxiosInstance } from 'axios';
 import { gql, GraphQLClient } from 'graphql-request';
 import { Version3Client } from 'jira.js';
+import { RequestException } from './../exceptions/request.exception';
 import { Issue, IssueData, Step } from './../entities/issue.entity';
 import { IssueConverter } from './issue.converter';
 
@@ -16,7 +17,10 @@ export class JiraGateway {
 
   public async createIssue(data: IssueData): Promise<Issue> {
     const input = this.issueConverter.convertToJiraFormat(data);
-    const result = await this.client.issues.createIssue(input);
+    const result = await this.catcher(
+      async () => await this.client.issues.createIssue(input),
+    );
+
     if (
       data.issue_type == 'Xray Test' &&
       data.steps != null &&
@@ -27,16 +31,24 @@ export class JiraGateway {
     return result as Issue;
   }
 
+  private async catcher(fn: () => Promise<any>) {
+    try {
+      return await fn();
+    } catch (e) {
+      throw new RequestException(JSON.stringify(e.response.data.errors));
+    }
+  }
+
   public async updateIssue(data: IssueData): Promise<Issue> {
     const input = this.issueConverter.convertToJiraFormat(data);
-    await this.client.issues.editIssue({ ...input, issueIdOrKey: data.id });
+    await this.catcher(
+      async () =>
+        await this.client.issues.editIssue({ ...input, issueIdOrKey: data.id }),
+    );
+
     const issueInfo = await this.getIssue(data.id, false);
     if (data.steps != null && data.steps.length > 0) {
-      if (issueInfo.issue_type == 'Xray Test') {
-        await this.addSteps(data.steps, issueInfo.id, issueInfo.test_type);
-      } else {
-        throw `There was an error while updating test steps on issue ${issueInfo.key}`;
-      }
+      await this.addSteps(data.steps, issueInfo.id, issueInfo.test_type);
     }
     return new Issue(issueInfo);
   }
@@ -192,6 +204,40 @@ export class JiraGateway {
         },
       },
     );
+    await this.retryRequest(async () => {
+      await this.addTestType(issueId, testType, graphQLClient);
+    }, 3);
+
+    for (const step of steps) {
+      await this.retryRequest(async () => {
+        await this.addStep(issueId, step, graphQLClient);
+      }, 3);
+    }
+  }
+
+  private async retryRequest(fn: () => Promise<any>, maxAttempts = 3) {
+    let error = null;
+    do {
+      try {
+        return await fn();
+      } catch (e) {
+        error = e;
+      }
+      await this.sleep(1000);
+      maxAttempts--;
+    } while (maxAttempts > 0);
+    throw new RequestException(JSON.stringify(error.response));
+  }
+
+  private async sleep(ms) {
+    return await new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
+  private async addTestType(
+    issueId: string,
+    testType: string,
+    graphQLClient: GraphQLClient,
+  ) {
     const query = gql`
       mutation {
         updateTestType(issueId: "${issueId}", testType: { name: "${
@@ -206,14 +252,20 @@ export class JiraGateway {
       }
     `;
     await graphQLClient.request(query);
-    for (const step of steps) {
-      const query = gql`
+  }
+
+  private async addStep(
+    issueId: string,
+    step: Step,
+    graphQLClient: GraphQLClient,
+  ) {
+    const query = gql`
       mutation {
         addTestStep(
           issueId: "${issueId}"
-          step: { action: "${step.action || ''}", data: "${
-        step.data || ''
-      }", result: "${step.result || ''}" }
+          step: { action: "${step.action.replace('\n', '\\n') || ''}", data: "${
+      step.data.replace('\n', '\\n') || ''
+    }", result: "${step.result.replace('\n', '\\n') || ''}" }
         ) {
           id
           action
@@ -222,8 +274,7 @@ export class JiraGateway {
         }
       }
     `;
-      await graphQLClient.request(query);
-    }
+    await graphQLClient.request(query);
   }
 
   private async getSteps(issueId: string): Promise<any> {
