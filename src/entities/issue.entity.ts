@@ -7,7 +7,7 @@ export class FixVersion {
 }
 
 export class Dependency {
-  type: string; //Test, Blocker...
+  dependency_type: string; //Test, Blocker...
   key: string;
 }
 

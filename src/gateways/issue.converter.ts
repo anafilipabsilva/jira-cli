@@ -5,7 +5,7 @@ import { Dependency, IssueData, Step } from './../entities/issue.entity';
 @Injectable()
 export class IssueConverter {
   private convertDependency(dependency: Dependency): any {
-    switch (dependency.type.toLowerCase()) {
+    switch (dependency.dependency_type.toLowerCase()) {
       case 'tests':
         return {
           add: {
@@ -19,7 +19,7 @@ export class IssueConverter {
             },
           },
         };
-      case 'tested':
+      case 'is tested by':
         return {
           add: {
             type: {
@@ -45,7 +45,7 @@ export class IssueConverter {
             },
           },
         };
-      case 'blocked':
+      case 'is blocked by':
         return {
           add: {
             type: {
@@ -58,7 +58,7 @@ export class IssueConverter {
             },
           },
         };
-      case 'relates':
+      case 'relates to':
         return {
           add: {
             type: {
@@ -71,7 +71,7 @@ export class IssueConverter {
             },
           },
         };
-      case 'depends':
+      case 'depends on':
         return {
           add: {
             type: {
@@ -84,7 +84,7 @@ export class IssueConverter {
             },
           },
         };
-      case 'dependent':
+      case 'is dependent of':
         return {
           add: {
             type: {
@@ -98,7 +98,7 @@ export class IssueConverter {
           },
         };
       default:
-        throw `The dependency "${dependency.type}" does not exist`;
+        throw `The dependency "${dependency.dependency_type}" does not exist`;
     }
   }
 
@@ -222,11 +222,11 @@ export class IssueConverter {
       issue.dependencies = data.fields['issuelinks'].map((issuelink) => {
         const dependency = {};
         if (issuelink.hasOwnProperty('outwardIssue')) {
-          dependency['type'] = issuelink.type['outward'];
+          dependency['dependency_type'] = issuelink.type['outward'];
           dependency['key'] = issuelink.outwardIssue['key'];
         }
         if (issuelink.hasOwnProperty('inwardIssue')) {
-          dependency['type'] = issuelink.type['inward'];
+          dependency['dependency_type'] = issuelink.type['inward'];
           dependency['key'] = issuelink.inwardIssue['key'];
         }
         return dependency;
