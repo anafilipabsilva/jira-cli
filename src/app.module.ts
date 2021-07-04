@@ -8,6 +8,7 @@ import { GetIssueCommand } from './commands/getIssue.command';
 import { SearchIssuesCommand } from './commands/searchIssues.command';
 import { UpdateEpicIssuesFeasabilityCommand } from './commands/updateEpicIssuesFeasability.command';
 import { UpdateIssuesCommand } from './commands/updateIssues.command';
+import { GetTemplatesCommand } from './commands/getTemplates.command';
 import { IssueConverter } from './gateways/issue.converter';
 import { JiraGateway } from './gateways/jira.gateway';
 import { CreateIssuesInteractor } from './interactors/createIssues.interactor';
@@ -49,6 +50,7 @@ const axiosProvider = {
     SearchIssuesInteractor,
     UpdateEpicIssuesFeasabilityCommand,
     UpdateEpicIssuesFeasabilityInteractor,
+    GetTemplatesCommand,
     FileService,
     JiraGateway,
     jiraClientProvider,
