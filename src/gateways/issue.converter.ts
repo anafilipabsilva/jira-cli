@@ -143,16 +143,23 @@ export class IssueConverter {
         },
       ],
     };
-    fields['components'] = data.components;
-    fields['labels'] = data.labels;
-    fields['fixVersions'] = data.releases;
+    fields['components'] = (data.components || []).filter(
+      (component) => component != null && Object.keys(component).length > 0,
+    );
+    fields['labels'] = (data.labels || []).filter((label) => label != null);
+    fields['fixVersions'] = (data.releases || []).filter(
+      (release) => release != null && Object.keys(release).length > 0,
+    );
     fields[process.env.FEASABILITY] = data.feasability && {
       value: data.feasability,
     };
     const update = {};
-    update['issuelinks'] = (data.dependencies || []).map((dependency) =>
-      this.convertDependency(dependency),
-    );
+    update['issuelinks'] = (data.dependencies || [])
+      .filter(
+        (dependency) =>
+          dependency != null && Object.keys(dependency).length > 0,
+      )
+      .map((dependency) => this.convertDependency(dependency));
     return {
       fields,
       update,
