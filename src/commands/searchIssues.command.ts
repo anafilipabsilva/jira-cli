@@ -10,7 +10,7 @@ export class SearchIssuesCommand {
 
   @Command({
     command: 'search:issues',
-    describe: 'Search for issues using specific parameters',
+    describe: 'Searches for issues using specific parameters',
     autoExit: true,
   })
   async create(
