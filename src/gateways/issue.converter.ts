@@ -143,9 +143,6 @@ export class IssueConverter {
         },
       ],
     };
-    fields['status'] = data.status && {
-      name: data.status,
-    };
     fields['components'] = data.components;
     fields['labels'] = data.labels;
     fields['fixVersions'] = data.releases;
