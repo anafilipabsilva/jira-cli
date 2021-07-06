@@ -47,13 +47,26 @@ $ export PATH=<project_path>/bin:$PATH
 
 ## Running the app
 
+To know more on the commands available, you can run:
+
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+$ jira-cli --help 
 ```
+
+To have some more insights about each command, you can either run the command or follow the links for each feature below.
+
+```bash
+$ jira-cli <command> --help 
+```
+
+#### [Create Issues](./docs/features.md#CreateIssues)
+
+#### [Update Issues](./docs/features.md#UpdateIssues)
+
+#### [Get Templates](./docs/features.md#GetTemplates)
+
+#### [Get Issue](./docs/features.md#GetIssue)
+
+#### [Search Issues](./docs/features.md#SearchIssues)
+
+#### [Update Epic Issues Feasability](./docs/features.md#UpdateEpicIssuesFeasability)
