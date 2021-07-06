@@ -13,12 +13,36 @@ The great advantage resides in automationg some processes, which saves a lot of 
 
 This project is open for contributions and new ideas, so don't be shy and share your thoughts with me!
 
-Below you can find the links for setting up the project and the commands to run the app.
 
-## Installation
+## Requirements
+
+In order to run JIRA CLI, it is necessary to have:
+- Node.js (at least v12)
+- yarn
+
+## Setting Up
+
+To install and build the project, run the following commands:
 
 ```bash
-$ npm install
+$ yarn install
+```
+
+```bash
+$ yarn build
+```
+
+In order to run the project and invoke the commands globally, you need to:
+-  give execution permissions to the binary file `jira-cli.js`
+
+```bash
+$ chmod +x ./bin/jira-cli.js
+```
+
+- add the binary file path to your shell script (e.g. zshrc)
+
+```bash
+$ export PATH=<project_path>/bin:$PATH
 ```
 
 ## Running the app
