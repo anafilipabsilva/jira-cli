@@ -1,4 +1,4 @@
-<h1><center>JIRA CLI</center></h1>
+<h1><p align="center">JIRA CLI</p></h1>
 
 **JIRA CLI** was born from the need to have a tool that would allow to easily create Xray tests in bulk. For those who ever tried to create Xray tests in Jira, you know how painful and time consuming it can be.
 From that need to all the features that are now available in this CLI, it was just a small step.
