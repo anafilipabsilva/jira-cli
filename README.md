@@ -59,14 +59,11 @@ To have some more insights about each command, you can either run the command or
 $ jira-cli <command> --help 
 ```
 
-#### [Create Issues](./docs/features.md#CreateIssues)
-
-#### [Update Issues](./docs/features.md#UpdateIssues)
-
-#### [Get Templates](./docs/features.md#GetTemplates)
-
-#### [Get Issue](./docs/features.md#GetIssue)
-
-#### [Search Issues](./docs/features.md#SearchIssues)
-
-#### [Update Epic Issues Feasability](./docs/features.md#UpdateEpicIssuesFeasability)
+| Commands      | Description |
+| --------- | --------- |
+| [Create Issues](./docs/features.md#CreateIssues)     | Creates issues from a file       |
+| [Update Issues](./docs/features.md#UpdateIssues)   | Updates issues from a file        |
+| [Get Templates](./docs/features.md#GetTemplates)   | Presents the URLs for the template forms to create and update issues        |
+| [Get Issue](./docs/features.md#GetIssue)   | Gets the information of an issue        |
+| [Search Issues](./docs/features.md#SearchIssues)   | Searches for issues using specific parameters        |
+| [Update Epic Issues Feasability](./docs/features.md#UpdateEpicIssuesFeasability)   | Adds a label (spillover or descoped) to the issues of an epic (for a certain project and release/fix version) if the epic feasability is Yellow or Red (respectively)     |
