@@ -1,11 +1,31 @@
-#### Create Issues
+### Create Issues
 
-#### Update Issues
+The following command allows creating one or multiple issues from a file.
 
-#### Get Templates
+```bash
+$ jira-cli create:issues -f <filepath> 
+```
 
-#### Get Issue
+The file should contain JSON, as the [example file](./../file.json) shows.
 
-#### Search Issues
+You don't need to use all the fields that are in the example file. For creating issues, the mandatory fields are: 
+- `project_key`;
+- `issue_type`;
+- `summary`.
 
-#### Update Epic Issues Feasability
+If the issue type is Epic, then `epic_name` field is also mandatory.
+
+Instead of writing JSON by yourself, you can follow this [link](t.ly/BGRx). It sends you to a JSON Schema Form, that will generate the JSON according to the fields you fill in. Then you just need to copy the JSON generated in the `formData` box to the file you will use in the command.
+
+
+### Update Issues
+
+
+
+### Get Templates
+
+### Get Issue
+
+### Search Issues
+
+### Update Epic Issues Feasibility
