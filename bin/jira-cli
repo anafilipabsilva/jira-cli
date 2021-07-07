@@ -1,3 +1,11 @@
 #!/usr/bin/env node
 
+const dotenv = require('dotenv');
+const fs = require('fs');
+const envconfig = dotenv.parse(fs.readFileSync(`${__dirname}/../.env`));
+
+for (const k in envconfig) {
+    process.env[k] = envconfig[k];
+}
+
 require('../dist/cli');
