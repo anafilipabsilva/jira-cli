@@ -1,4 +1,4 @@
-### Create Issues
+## Create Issues
 
 The following command allows creating one or multiple issues from a file:
 
@@ -18,7 +18,7 @@ If the issue type is Epic, then `epic_name` field is also mandatory.
 Instead of writing JSON by yourself, you can follow this [link](t.ly/BGRx). It sends you to a JSON Schema Form, that will generate the JSON according to the fields you fill in. Then you just need to copy the JSON generated in the `formData` box to the file you will use in the command.
 
 
-### Update Issues
+## Update Issues
 
 The following command allows updating one or multiple issues from a file:
 
@@ -30,7 +30,7 @@ Just like for creating an issue, the file should contain JSON. For updating an i
 
 Once again, instead of writing JSON by yourself, you can follow this [link](t.ly/MNUG), which will send you to the right JSON Schema Form to update an issue. You just need to copy the JSON generated in the `formData` box to the file you will use in the command.
 
-### Get Templates
+## Get Templates
 
 If you need a quick shortcut to get the URLs for JSON Schema Forms to create and update issues, you can use the following command:
 
@@ -38,14 +38,30 @@ If you need a quick shortcut to get the URLs for JSON Schema Forms to create and
 $ jira-cli get:templates 
 ```
 
-### Get Issue
+## Get Issue
 
-If you need to quickly retrieve the information of an issue, without having to go to Jira platform, then you just need to know the issue ID and use it in the following command:
+If you need to quickly retrieve the information of an issue, without having to go to the Jira platform, then you just need to know the issue ID and use it in the following command:
 
 ```bash
 $ jira-cli get:issue -i <issue_id>
 ```
 
-### Search Issues
+## Search Issues
 
-### Update Epic Issues Feasibility
+Have you ever wanted to search for issues with specific characteristics and had troubles doing it directly in the Jira platform? If so, this command may be your solution. 
+
+```bash
+$ jira-cli search:issues -p <project_id> -t <issue_type> -l <label> -e <epic_link_id> -f <feasibility> -s <status> -r <release>
+```
+
+With this command, you can search for issues for a specific `project_id` (it is the only mandatory field in the command), along with other parameters:
+- label;
+- epic link ID;
+- feasibility;
+- status;
+- release/fix version;
+- issue type.
+
+The logical operator behind this search is **AND**, which means it will list all the issues that correspond to all the conditions.
+
+## Update Epic Issues Feasibility
