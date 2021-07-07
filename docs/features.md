@@ -40,6 +40,12 @@ $ jira-cli get:templates
 
 ### Get Issue
 
+If you need to quickly retrieve the information of an issue, without having to go to Jira platform, then you just need to know the issue ID and use it in the following command:
+
+```bash
+$ jira-cli get:issue -i <issue_id>
+```
+
 ### Search Issues
 
 ### Update Epic Issues Feasibility
