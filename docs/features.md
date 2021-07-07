@@ -1,6 +1,6 @@
 ### Create Issues
 
-The following command allows creating one or multiple issues from a file.
+The following command allows creating one or multiple issues from a file:
 
 ```bash
 $ jira-cli create:issues -f <filepath> 
@@ -20,7 +20,7 @@ Instead of writing JSON by yourself, you can follow this [link](t.ly/BGRx). It s
 
 ### Update Issues
 
-The following command allows updating one or multiple issues from a file.
+The following command allows updating one or multiple issues from a file:
 
 ```bash
 $ jira-cli update:issues -f <filepath> 
@@ -31,6 +31,12 @@ Just like for creating an issue, the file should contain JSON. For updating an i
 Once again, instead of writing JSON by yourself, you can follow this [link](t.ly/MNUG), which will send you to the right JSON Schema Form to update an issue. You just need to copy the JSON generated in the `formData` box to the file you will use in the command.
 
 ### Get Templates
+
+If you need a quick shortcut to get the URLs for JSON Schema Forms to create and update issues, you can use the following command:
+
+```bash
+$ jira-cli get:templates 
+```
 
 ### Get Issue
 
