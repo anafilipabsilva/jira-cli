@@ -68,7 +68,7 @@ The logical operator behind this search is **AND**, which means it will list all
 
 This is a really specific command. It was designed by request and its sole purpose is to automate a process that was usually done by hand. 
 
-If you have an epic, with the feasibility of **Yellow** or **Red**, this command will search for all the issues in those epics that have the status **To Do** and add them to the label `spillover` or `descoped`, respectively.
+If you have an epic, with the feasibility of **Yellow** or **Red**, this command will search for all the issues in those epics that have the status **To Do** and add to them the label `spillover` or `descoped`, respectively.
 
 For running this command, it is only necessary to know the `project ID` and the `release/fix version ID`. 
 
