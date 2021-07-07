@@ -70,23 +70,23 @@ export class JiraGateway {
     type = null,
     release = null,
     status = null,
-    feasability = null,
+    feasibility = null,
     epicLinkId = null,
     label = null,
   ): Promise<IssueData[]> {
-    if (feasability != null) {
-      switch (feasability.toLowerCase()) {
+    if (feasibility != null) {
+      switch (feasibility.toLowerCase()) {
         case 'green':
-          feasability = 'Green - Looks Possible';
+          feasibility = 'Green - Looks Possible';
           break;
         case 'yellow':
-          feasability = 'Yellow - Stretch / Maybe';
+          feasibility = 'Yellow - Stretch / Maybe';
           break;
         case 'orange':
-          feasability = 'Orange - Needs More Definition';
+          feasibility = 'Orange - Needs More Definition';
           break;
         case 'red':
-          feasability = 'Red - Not Possible';
+          feasibility = 'Red - Not Possible';
           break;
       }
     }
@@ -95,7 +95,7 @@ export class JiraGateway {
       issueType: type,
       fixVersion: release,
       statusCategory: status,
-      'cf[13031]': feasability,
+      'cf[13031]': feasibility,
       'cf[10009]': epicLinkId,
       labels: label,
     };
@@ -120,7 +120,7 @@ export class JiraGateway {
     return convertedResult;
   }
 
-  public async updateEpicIssuesFeasability(
+  public async updateEpicIssuesFeasibility(
     projectId: string,
     release: string,
   ): Promise<Issue[]> {
@@ -137,10 +137,10 @@ export class JiraGateway {
     const redEpicStories = [];
     const yellowEpicStories = [];
     for (const epic of epics) {
-      if (!epic.feasability) {
+      if (!epic.feasibility) {
         continue;
       }
-      if (epic.feasability.includes('Red')) {
+      if (epic.feasibility.includes('Red')) {
         redEpicStories.push(
           await this.searchIssues(
             projectId,
@@ -154,7 +154,7 @@ export class JiraGateway {
         );
       }
 
-      if (epic.feasability.includes('Yellow')) {
+      if (epic.feasibility.includes('Yellow')) {
         yellowEpicStories.push(
           await this.searchIssues(
             projectId,

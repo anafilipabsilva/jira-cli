@@ -1,25 +1,25 @@
 import { JiraGateway } from 'src/gateways/jira.gateway';
-import { UpdateEpicIssuesFeasabilityInteractor } from './updateEpicIssuesFeasability.interactor';
+import { UpdateEpicIssuesFeasibilityInteractor } from './updateEpicIssuesFeasibility.interactor';
 
-describe('UpdateEpicIssuesFeasabilityInteractor', () => {
-  let interactor: UpdateEpicIssuesFeasabilityInteractor;
+describe('UpdateEpicIssuesFeasibilityInteractor', () => {
+  let interactor: UpdateEpicIssuesFeasibilityInteractor;
 
-  const mockUpdateEpicIssuesFeasability = jest.fn();
+  const mockUpdateEpicIssuesFeasibility = jest.fn();
   const jiraGatewayMock = ({
-    updateEpicIssuesFeasability: mockUpdateEpicIssuesFeasability,
+    updateEpicIssuesFeasibility: mockUpdateEpicIssuesFeasibility,
   } as unknown) as JiraGateway;
 
   beforeEach(async () => {
-    mockUpdateEpicIssuesFeasability.mockClear();
-    interactor = new UpdateEpicIssuesFeasabilityInteractor(jiraGatewayMock);
+    mockUpdateEpicIssuesFeasibility.mockClear();
+    interactor = new UpdateEpicIssuesFeasibilityInteractor(jiraGatewayMock);
   });
 
   describe('when the call method is executed', () => {
-    it('should call the update epic issues feasability method', async () => {
+    it('should call the update epic issues feasibility method', async () => {
       await interactor.call('project-id', 'release');
 
-      expect(mockUpdateEpicIssuesFeasability.mock.calls.length).toBe(1);
-      expect(mockUpdateEpicIssuesFeasability.mock.calls[0]).toEqual([
+      expect(mockUpdateEpicIssuesFeasibility.mock.calls.length).toBe(1);
+      expect(mockUpdateEpicIssuesFeasibility.mock.calls[0]).toEqual([
         'project-id',
         'release',
       ]);
@@ -27,7 +27,7 @@ describe('UpdateEpicIssuesFeasabilityInteractor', () => {
 
     describe('and there are issues to update', () => {
       it('should return the list of updated issues', async () => {
-        mockUpdateEpicIssuesFeasability.mockImplementationOnce(() => [
+        mockUpdateEpicIssuesFeasibility.mockImplementationOnce(() => [
           {
             id: 'INT-123',
             key: 'Dummy',
@@ -59,7 +59,7 @@ describe('UpdateEpicIssuesFeasabilityInteractor', () => {
 
     describe('and there are no issues to update', () => {
       it('should return an empty array', async () => {
-        mockUpdateEpicIssuesFeasability.mockImplementationOnce(() => []);
+        mockUpdateEpicIssuesFeasibility.mockImplementationOnce(() => []);
         const result = await interactor.call('project-id', 'release');
 
         expect(result).toEqual([]);

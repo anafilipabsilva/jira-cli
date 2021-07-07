@@ -8,7 +8,7 @@
     "summary": "The title of the issue - mandatory when creating an issue",
     "description": "The issue description - optional",
     "acceptance_criteria": "The issue acceptance criteria - optional",
-    "feasability": "The issue feasability (e.g. Orange - Needs More Definition)",
+    "feasibility": "The issue feasibility (e.g. Orange - Needs More Definition)",
     "components": [
       {
         "name": "The issue components (e.g. Actions API, Integrations UI...) - optional, but there can be several components"

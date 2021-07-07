@@ -10,7 +10,7 @@ export class SearchIssuesInteractor {
     issueType = null,
     release = null,
     status = null,
-    feasability = null,
+    feasibility = null,
     epicLinkId = null,
     label = null,
   ) {
@@ -19,7 +19,7 @@ export class SearchIssuesInteractor {
       issueType,
       release,
       status,
-      feasability,
+      feasibility,
       epicLinkId,
       label,
     );

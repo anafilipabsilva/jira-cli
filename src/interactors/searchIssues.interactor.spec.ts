@@ -22,7 +22,7 @@ describe('SearchIssuesInteractor', () => {
           'issue-type',
           'release',
           'status',
-          'feasability',
+          'feasibility',
           'epic-link-id',
           'label',
         );
@@ -33,7 +33,7 @@ describe('SearchIssuesInteractor', () => {
           'issue-type',
           'release',
           'status',
-          'feasability',
+          'feasibility',
           'epic-link-id',
           'label',
         ]);

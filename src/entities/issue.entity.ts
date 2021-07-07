@@ -28,7 +28,7 @@ export class IssueData {
   components: Component[];
   labels: string[];
   releases: FixVersion[];
-  feasability: string;
+  feasibility: string;
   dependencies: Dependency[];
   test_type: string;
   steps: Step[];

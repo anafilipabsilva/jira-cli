@@ -51,14 +51,14 @@ export class SearchIssuesCommand {
     })
     status: string,
     @Option({
-      name: 'feasability',
+      name: 'feasibility',
       describe:
-        'The feasability of the issue (e.g. Green, Yellow, Red, Orange)',
+        'The feasibility of the issue (e.g. Green, Yellow, Red, Orange)',
       type: 'string',
       alias: 'f',
       required: false,
     })
-    feasability: string,
+    feasibility: string,
     @Option({
       name: 'epicLinkId',
       describe:
@@ -82,7 +82,7 @@ export class SearchIssuesCommand {
       issueType,
       release,
       status,
-      feasability,
+      feasibility,
       epicLinkId,
       label,
     );

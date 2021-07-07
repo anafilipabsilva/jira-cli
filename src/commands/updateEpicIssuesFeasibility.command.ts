@@ -1,17 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { Command, Option } from 'nestjs-command';
-import { UpdateEpicIssuesFeasabilityInteractor } from '../interactors/updateEpicIssuesFeasability.interactor';
+import { UpdateEpicIssuesFeasibilityInteractor } from '../interactors/updateEpicIssuesFeasibility.interactor';
 
 @Injectable()
-export class UpdateEpicIssuesFeasabilityCommand {
+export class UpdateEpicIssuesFeasibilityCommand {
   constructor(
-    private readonly updateEpicIssuesFeasabilityInteractor: UpdateEpicIssuesFeasabilityInteractor,
+    private readonly updateEpicIssuesFeasibilityInteractor: UpdateEpicIssuesFeasibilityInteractor,
   ) {}
 
   @Command({
-    command: 'update:issues_feasability',
+    command: 'update:issues_feasibility',
     describe:
-      'Adds a label (spillover or descoped) to the issues of an epic (for a certain project and release/fix version) if the epic feasability is Yellow or Red (respectively)',
+      'Adds a label (spillover or descoped) to the issues of an epic (for a certain project and release/fix version) if the epic feasibility is Yellow or Red (respectively)',
     autoExit: true,
   })
   async create(
@@ -34,7 +34,7 @@ export class UpdateEpicIssuesFeasabilityCommand {
     })
     release: string,
   ) {
-    const result = await this.updateEpicIssuesFeasabilityInteractor.call(
+    const result = await this.updateEpicIssuesFeasibilityInteractor.call(
       projectId,
       release,
     );

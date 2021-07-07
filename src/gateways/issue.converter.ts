@@ -150,8 +150,8 @@ export class IssueConverter {
     fields['fixVersions'] = (data.releases || []).filter(
       (release) => release != null && Object.keys(release).length > 0,
     );
-    fields[process.env.FEASABILITY] = data.feasability && {
-      value: data.feasability,
+    fields[process.env.FEASIBILITY] = data.feasibility && {
+      value: data.feasibility,
     };
     const update = {};
     update['issuelinks'] = (data.dependencies || [])
@@ -198,8 +198,8 @@ export class IssueConverter {
       issue.acceptance_criteria =
         data.fields[process.env.ACCEPTANCE_CRITERIA].content[0].content[0].text;
     }
-    if (data.fields[process.env.FEASABILITY] != null) {
-      issue.feasability = data.fields[process.env.FEASABILITY].value;
+    if (data.fields[process.env.FEASIBILITY] != null) {
+      issue.feasibility = data.fields[process.env.FEASIBILITY].value;
     }
     if (
       data.fields['components'] != null &&
