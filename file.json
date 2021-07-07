@@ -1,41 +1,44 @@
 [
-    {
-        "id": "AP-53",
-        "summary": "Test updated second round",
-        "description": "Description for an update",
-        "steps": [
-            {
-                "action": "- New step",
-                "data": "New data",
-                "result": "- New result"
-            },
-            {
-                "action": "- Second one",
-                "data": "Data for two",
-                "result": "- Another success test"
-            }
-        ]
-    },
-    {
-        "id": "AP-54",
-        "acceptance_criteria": "New second acceptance criteria",
-        "components": [
-            {
-                "name": "Integrations UI"
-            }
-        ],
-        "labels": ["rivendell"],
-        "dependencies": [
-            {
-                "type": "blocks",
-                "key": "AP-2"
-            }
-        ],
-        "steps": [
-            {
-                "action": "- First step",
-                "result": "- First result"
-            }
-        ]
-    }
+  {
+    "id": "Issue ID (e.g. INT-XXX) - only necessary to update issues",
+    "project_key": "Project ID (e.g. INT) - mandatory for creating issues",
+    "issue_type": "e.g. Story, Epic, Xray Test... - mandatory for creating issues",
+    "epic_name": "The name of the Epic - mandatory when creating an issue of type Epic",
+    "epic_link_id": "The ID of the Epic to where the issue will be linked (e.g. INT-XXX) - optional",
+    "summary": "The title of the issue - mandatory when creating an issue",
+    "description": "The issue description - optional",
+    "acceptance_criteria": "The issue acceptance criteria - optional",
+    "feasibility": "The issue feasibility (e.g. Orange - Needs More Definition)",
+    "components": [
+      {
+        "name": "The issue components (e.g. Actions API, Integrations UI...) - optional, but there can be several components"
+      }
+    ],
+    "labels": [
+      "The issue labels (e.g. asgard, tech-debt, automated_test) - optional, but there can be several labels"
+    ],
+    "releases": [
+      {
+        "name": "The Fix Versions names (e.g. Fall'21, Parking Lot) - optional, but there can be several releases"
+      }
+    ],
+    "dependencies": [
+      {
+        "dependency_type": "Which kind of dependency the issue has (e.g. relates to, is tested by) - optional",
+        "key": "The issue of the ID that is a dependency - mandatory if the dependency type is defined"
+      }
+    ],
+    "test_type": "The kind of test (e.g. Manual, Automated) - optional and only necessary for Xray Test issue type. If not filled, a Manual test type will be created by default",
+    "steps": [
+      {
+        "action": "The conditions to prepare the test",
+        "data": "The data to test",
+        "result": "The expected result for the test"
+      },
+      {
+        "action": "There could be several steps",
+        "result": "And these fields can be filled as intended"
+      }
+    ]
+  }
 ]

@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { IssueData } from 'src/entities/issue.entity';
+import { IssueData } from './../entities/issue.entity';
+import { RequestException } from './../exceptions/request.exception';
 import { JiraGateway } from './../gateways/jira.gateway';
 import { FileService } from './../services/file.service';
 
@@ -17,7 +18,16 @@ export class CreateIssuesInteractor {
     for (const issue of issues) {
       this.validRequiredFields(issue);
 
-      result.push(await this.jiraGateway.createIssue(issue));
+      try {
+        result.push(await this.jiraGateway.createIssue(issue));
+      } catch (e) {
+        console.error(
+          `There was an error creating the issue: '${issue.summary}'`,
+        );
+        if (e instanceof RequestException) {
+          console.error(e.message);
+        }
+      }
     }
     return result;
   }

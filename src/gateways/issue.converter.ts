@@ -1,17 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { IssueBean } from 'jira.js/out/version2/models';
-import {
-  Component,
-  Dependency,
-  FixVersion,
-  IssueData,
-  Step,
-} from './../entities/issue.entity';
+import { Dependency, IssueData, Step } from './../entities/issue.entity';
 
 @Injectable()
 export class IssueConverter {
   private convertDependency(dependency: Dependency): any {
-    switch (dependency.type.toLowerCase()) {
+    switch (dependency.dependency_type.toLowerCase()) {
       case 'tests':
         return {
           add: {
@@ -25,7 +19,7 @@ export class IssueConverter {
             },
           },
         };
-      case 'tested':
+      case 'is tested by':
         return {
           add: {
             type: {
@@ -42,7 +36,7 @@ export class IssueConverter {
         return {
           add: {
             type: {
-              name: 'Blocks',
+              name: 'Blocker',
               inward: 'is blocked by',
               outward: 'blocks',
             },
@@ -51,11 +45,11 @@ export class IssueConverter {
             },
           },
         };
-      case 'blocked':
+      case 'is blocked by':
         return {
           add: {
             type: {
-              name: 'Blocks',
+              name: 'Blocker',
               inward: 'is blocked by',
               outward: 'blocks',
             },
@@ -64,7 +58,7 @@ export class IssueConverter {
             },
           },
         };
-      case 'relates':
+      case 'relates to':
         return {
           add: {
             type: {
@@ -77,7 +71,7 @@ export class IssueConverter {
             },
           },
         };
-      case 'depends':
+      case 'depends on':
         return {
           add: {
             type: {
@@ -90,7 +84,7 @@ export class IssueConverter {
             },
           },
         };
-      case 'dependent':
+      case 'is dependent of':
         return {
           add: {
             type: {
@@ -104,7 +98,7 @@ export class IssueConverter {
           },
         };
       default:
-        throw `The dependency "${dependency.type}" does not exist`;
+        throw `The dependency "${dependency.dependency_type}" does not exist`;
     }
   }
 
@@ -117,8 +111,8 @@ export class IssueConverter {
       key: data.project_key,
     };
     fields['summary'] = data.summary;
-    fields['customfield_10011'] = data.epic_name;
-    fields['customfield_10014'] = data.epic_link_id;
+    fields[process.env.EPIC_NAME] = data.epic_name;
+    fields[process.env.EPIC_LINK_ID] = data.epic_link_id;
     fields['description'] = data.description && {
       version: 1,
       type: 'doc',
@@ -134,7 +128,7 @@ export class IssueConverter {
         },
       ],
     };
-    fields['customfield_10040'] = data.acceptance_criteria && {
+    fields[process.env.ACCEPTANCE_CRITERIA] = data.acceptance_criteria && {
       version: 1,
       type: 'doc',
       content: [
@@ -149,19 +143,23 @@ export class IssueConverter {
         },
       ],
     };
-    fields['status'] = data.status && {
-      name: data.status,
-    };
-    fields['components'] = data.components;
-    fields['labels'] = data.labels;
-    fields['fixVersions'] = data.fix_versions;
-    fields['customfield_10041'] = data.feasability && {
-      value: data.feasability,
+    fields['components'] = (data.components || []).filter(
+      (component) => component != null && Object.keys(component).length > 0,
+    );
+    fields['labels'] = (data.labels || []).filter((label) => label != null);
+    fields['fixVersions'] = (data.releases || []).filter(
+      (release) => release != null && Object.keys(release).length > 0,
+    );
+    fields[process.env.FEASIBILITY] = data.feasibility && {
+      value: data.feasibility,
     };
     const update = {};
-    update['issuelinks'] = (data.dependencies || []).map((dependency) =>
-      this.convertDependency(dependency),
-    );
+    update['issuelinks'] = (data.dependencies || [])
+      .filter(
+        (dependency) =>
+          dependency != null && Object.keys(dependency).length > 0,
+      )
+      .map((dependency) => this.convertDependency(dependency));
     return {
       fields,
       update,
@@ -178,39 +176,37 @@ export class IssueConverter {
     issue.issue_type = data.fields['issuetype'].name;
     issue.status = data.fields['status'].name;
     if (data.fields['issuetype'].name == 'Epic') {
-      issue.epic_name = data.fields['customfield_10011'];
+      issue.epic_name = data.fields[process.env.EPIC_NAME];
     }
     if (
       data.fields['issuetype'].name != 'Epic' &&
-      data.fields['customfield_10014'] != null
+      data.fields[process.env.EPIC_LINK_ID] != null
     ) {
-      issue.epic_link_id = data.fields['customfield_10014'];
+      issue.epic_link_id = data.fields[process.env.EPIC_LINK_ID];
     }
     issue.summary = data.fields['summary'];
     if (
       data.fields['description'] != null &&
-      data.fields['description'].length > 0
+      data.fields['description'].content.length > 0
     ) {
       issue.description = data.fields['description'].content[0].content[0].text;
     }
     if (
-      data.fields['customfield_10040'] != null &&
-      data.fields['customfield_10040'].length > 0
+      data.fields[process.env.ACCEPTANCE_CRITERIA] != null &&
+      data.fields[process.env.ACCEPTANCE_CRITERIA].content.length > 0
     ) {
       issue.acceptance_criteria =
-        data.fields['customfield_10040'].content[0].content[0].text;
+        data.fields[process.env.ACCEPTANCE_CRITERIA].content[0].content[0].text;
     }
-    if (data.fields['customfield_10041'] != null) {
-      issue.feasability = data.fields['customfield_10041'].value;
+    if (data.fields[process.env.FEASIBILITY] != null) {
+      issue.feasibility = data.fields[process.env.FEASIBILITY].value;
     }
     if (
       data.fields['components'] != null &&
       data.fields['components'].length > 0
     ) {
       issue.components = data.fields['components'].map((component) => {
-        const c = new Component();
-        c.name = component.name;
-        return c;
+        return component.name;
       });
     }
     if (data.fields['labels'] != null && data.fields['labels'].length > 0) {
@@ -222,10 +218,8 @@ export class IssueConverter {
       data.fields['fixVersions'] != null &&
       data.fields['fixVersions'].length > 0
     ) {
-      issue.fix_versions = data.fields['fixVersions'].map((fixVersion) => {
-        const fv = new FixVersion();
-        fv.name = fixVersion.name;
-        return fv;
+      issue.releases = data.fields['fixVersions'].map((fixVersion) => {
+        return fixVersion.name;
       });
     }
     if (
@@ -233,19 +227,19 @@ export class IssueConverter {
       data.fields['issuelinks'].length > 0
     ) {
       issue.dependencies = data.fields['issuelinks'].map((issuelink) => {
-        const dependency = new Dependency();
+        const dependency = {};
         if (issuelink.hasOwnProperty('outwardIssue')) {
-          dependency.type = issuelink.type['outward'];
-          dependency.key = issuelink.outwardIssue['key'];
+          dependency['dependency_type'] = issuelink.type['outward'];
+          dependency['key'] = issuelink.outwardIssue['key'];
         }
         if (issuelink.hasOwnProperty('inwardIssue')) {
-          dependency.type = issuelink.type['inward'];
-          dependency.key = issuelink.inwardIssue['key'];
+          dependency['dependency_type'] = issuelink.type['inward'];
+          dependency['key'] = issuelink.inwardIssue['key'];
         }
         return dependency;
       });
     }
-    if (steps != null && steps.length > 0) {
+    if (steps != null && steps.getTest['steps'].length > 0) {
       issue.test_type = steps.getTest['testType'].name;
       issue.steps = steps.getTest['steps'].map((step) => {
         const s = new Step();

@@ -7,7 +7,7 @@ export class FixVersion {
 }
 
 export class Dependency {
-  type: string; //Test, Blocker...
+  dependency_type: string;
   key: string;
 }
 
@@ -27,8 +27,8 @@ export class IssueData {
   epic_link_id: string;
   components: Component[];
   labels: string[];
-  fix_versions: FixVersion[];
-  feasability: string;
+  releases: FixVersion[];
+  feasibility: string;
   dependencies: Dependency[];
   test_type: string;
   steps: Step[];

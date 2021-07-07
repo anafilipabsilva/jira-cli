@@ -1,5 +1,5 @@
-import { Command, Positional } from 'nestjs-command';
 import { Injectable } from '@nestjs/common';
+import { Command, Option } from 'nestjs-command';
 import { CreateIssuesInteractor } from '../interactors/createIssues.interactor';
 
 @Injectable()
@@ -9,15 +9,17 @@ export class CreateIssuesCommand {
   ) {}
 
   @Command({
-    command: 'create:issues <filepath>',
+    command: 'create:issues',
     describe: 'Creates issues from a file',
     autoExit: true,
   })
   async create(
-    @Positional({
+    @Option({
       name: 'filepath',
       describe: 'The path to the file containing the issues to be created',
       type: 'string',
+      alias: 'f',
+      required: true,
     })
     filepath: string,
   ) {

@@ -1,12 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
-import {
-  Issue,
-  Step,
-  IssueData
-} from 'src/entities/issue.entity';
-import { Version3Client } from 'jira.js';
 import { AxiosInstance } from 'axios';
-import { GraphQLClient, gql } from 'graphql-request';
+import { gql, GraphQLClient } from 'graphql-request';
+import { Version3Client } from 'jira.js';
+import { RequestException } from './../exceptions/request.exception';
+import { Issue, IssueData, Step } from './../entities/issue.entity';
 import { IssueConverter } from './issue.converter';
 
 @Injectable()
@@ -20,9 +17,12 @@ export class JiraGateway {
 
   public async createIssue(data: IssueData): Promise<Issue> {
     const input = this.issueConverter.convertToJiraFormat(data);
-    const result = await this.client.issues.createIssue(input);
+    const result = await this.catcher(
+      async () => await this.client.issues.createIssue(input),
+    );
+
     if (
-      data.issue_type == 'Test' &&
+      data.issue_type == 'Xray Test' &&
       data.steps != null &&
       data.steps.length >= 1
     ) {
@@ -31,16 +31,24 @@ export class JiraGateway {
     return result as Issue;
   }
 
+  private async catcher(fn: () => Promise<any>) {
+    try {
+      return await fn();
+    } catch (e) {
+      throw new RequestException(JSON.stringify(e.response.data.errors));
+    }
+  }
+
   public async updateIssue(data: IssueData): Promise<Issue> {
     const input = this.issueConverter.convertToJiraFormat(data);
-    await this.client.issues.editIssue({ ...input, issueIdOrKey: data.id });
+    await this.catcher(
+      async () =>
+        await this.client.issues.editIssue({ ...input, issueIdOrKey: data.id }),
+    );
+
     const issueInfo = await this.getIssue(data.id, false);
     if (data.steps != null && data.steps.length > 0) {
-      if (issueInfo.issue_type == 'Test') {
-        await this.addSteps(data.steps, issueInfo.id, issueInfo.test_type);
-      } else {
-        throw `There was an error while updating test steps on issue ${issueInfo.key}`;
-      }
+      await this.addSteps(data.steps, issueInfo.id, issueInfo.test_type);
     }
     return new Issue(issueInfo);
   }
@@ -48,14 +56,137 @@ export class JiraGateway {
   public async getIssue(id: string, getSteps = true): Promise<IssueData> {
     const input = {
       issueIdOrKey: id,
-      fields: ['project', 'issuetype', 'summary', 'description', 'customfield_10040', 'customfield_10041', 'customfield_10011', 'status', 'customfield_10014', 'components', 'labels', 'fixVersions', 'issuelinks']
     };
     const result = await this.client.issues.getIssue(input);
     let steps;
-    if (result.fields['issuetype'].name == 'Test' && getSteps) {
+    if (result.fields['issuetype'].name == 'Xray Test' && getSteps) {
       steps = await this.getSteps(result.id);
     }
     return this.issueConverter.convertResult(result, steps);
+  }
+
+  public async searchIssues(
+    projectId: string,
+    type = null,
+    release = null,
+    status = null,
+    feasibility = null,
+    epicLinkId = null,
+    label = null,
+  ): Promise<IssueData[]> {
+    if (feasibility != null) {
+      switch (feasibility.toLowerCase()) {
+        case 'green':
+          feasibility = 'Green - Looks Possible';
+          break;
+        case 'yellow':
+          feasibility = 'Yellow - Stretch / Maybe';
+          break;
+        case 'orange':
+          feasibility = 'Orange - Needs More Definition';
+          break;
+        case 'red':
+          feasibility = 'Red - Not Possible';
+          break;
+      }
+    }
+
+    const optionalParams = {
+      issueType: type,
+      fixVersion: release,
+      statusCategory: status,
+      'cf[13031]': feasibility,
+      'cf[10009]': epicLinkId,
+      labels: label,
+    };
+
+    let jqlQuery = `project = '${projectId}'`;
+    for (const key in optionalParams) {
+      if (optionalParams[key] != null) {
+        jqlQuery += ` AND ${key} = '${optionalParams[key]}'`;
+      }
+    }
+    jqlQuery += ` ORDER BY key ASC`;
+
+    const input = {};
+    input['jql'] = jqlQuery;
+
+    const result = await this.client.issueSearch.searchForIssuesUsingJql(input);
+
+    const convertedResult = [];
+    for (const issue of result.issues) {
+      convertedResult.push(this.issueConverter.convertResult(issue));
+    }
+    return convertedResult;
+  }
+
+  public async updateEpicIssuesFeasibility(
+    projectId: string,
+    release: string,
+  ): Promise<Issue[]> {
+    const epics = await this.searchIssues(
+      projectId,
+      'Epic',
+      release,
+      null,
+      null,
+      null,
+      null,
+    );
+
+    const redEpicStories = [];
+    const yellowEpicStories = [];
+    for (const epic of epics) {
+      if (!epic.feasibility) {
+        continue;
+      }
+      if (epic.feasibility.includes('Red')) {
+        redEpicStories.push(
+          await this.searchIssues(
+            projectId,
+            null,
+            null,
+            'To Do',
+            null,
+            epic.key,
+            null,
+          ),
+        );
+      }
+
+      if (epic.feasibility.includes('Yellow')) {
+        yellowEpicStories.push(
+          await this.searchIssues(
+            projectId,
+            null,
+            null,
+            'To Do',
+            null,
+            epic.key,
+            null,
+          ),
+        );
+      }
+    }
+
+    const finalResult = [];
+    for (const story of redEpicStories.flat()) {
+      const issue = {
+        id: `${story.key}`,
+        labels: ['descoped'],
+      } as IssueData;
+      finalResult.push(await this.updateIssue(issue));
+    }
+
+    for (const story of yellowEpicStories.flat()) {
+      const issue = {
+        id: story.key,
+        labels: ['spillover'],
+      } as IssueData;
+      finalResult.push(await this.updateIssue(issue));
+    }
+
+    return finalResult;
   }
 
   private async addSteps(
@@ -63,7 +194,6 @@ export class JiraGateway {
     issueId: string,
     testType: string,
   ): Promise<any> {
-
     const token = await this.getAuthToken();
 
     const graphQLClient = new GraphQLClient(
@@ -74,6 +204,40 @@ export class JiraGateway {
         },
       },
     );
+    await this.retryRequest(async () => {
+      await this.addTestType(issueId, testType, graphQLClient);
+    }, 3);
+
+    for (const step of steps) {
+      await this.retryRequest(async () => {
+        await this.addStep(issueId, step, graphQLClient);
+      }, 3);
+    }
+  }
+
+  private async retryRequest(fn: () => Promise<any>, maxAttempts = 3) {
+    let error = null;
+    do {
+      try {
+        return await fn();
+      } catch (e) {
+        error = e;
+      }
+      await this.sleep(1000);
+      maxAttempts--;
+    } while (maxAttempts > 0);
+    throw new RequestException(JSON.stringify(error.response));
+  }
+
+  private async sleep(ms) {
+    return await new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
+  private async addTestType(
+    issueId: string,
+    testType: string,
+    graphQLClient: GraphQLClient,
+  ) {
     const query = gql`
       mutation {
         updateTestType(issueId: "${issueId}", testType: { name: "${
@@ -88,12 +252,20 @@ export class JiraGateway {
       }
     `;
     await graphQLClient.request(query);
-    for (const step of steps) {
-      const query = gql`
+  }
+
+  private async addStep(
+    issueId: string,
+    step: Step,
+    graphQLClient: GraphQLClient,
+  ) {
+    const query = gql`
       mutation {
         addTestStep(
           issueId: "${issueId}"
-          step: { action: "${step.action || ''}", data: "${step.data || ''}", result: "${step.result || ''}" }
+          step: { action: "${step.action.replace('\n', '\\n') || ''}", data: "${
+      step.data.replace('\n', '\\n') || ''
+    }", result: "${step.result.replace('\n', '\\n') || ''}" }
         ) {
           id
           action
@@ -102,8 +274,7 @@ export class JiraGateway {
         }
       }
     `;
-      await graphQLClient.request(query);
-    }
+    await graphQLClient.request(query);
   }
 
   private async getSteps(issueId: string): Promise<any> {
