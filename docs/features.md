@@ -20,7 +20,15 @@ Instead of writing JSON by yourself, you can follow this [link](t.ly/BGRx). It s
 
 ### Update Issues
 
+The following command allows updating one or multiple issues from a file.
 
+```bash
+$ jira-cli update:issues -f <filepath> 
+```
+
+Just like for creating an issue, the file should contain JSON. For updating an issue, the only mandatory field is the `id`.
+
+Once again, instead of writing JSON by yourself, you can follow this [link](t.ly/MNUG), which will send you to the right JSON Schema Form to update an issue. You just need to copy the JSON generated in the `formData` box to the file you will use in the command.
 
 ### Get Templates
 
