@@ -75,9 +75,9 @@ $ jira-cli <command> --help
 
 | Commands      | Description |
 | --------- | --------- |
-| [Create Issues](./docs/features.md#CreateIssues)     | Creates issues from a file       |
-| [Update Issues](./docs/features.md#UpdateIssues)   | Updates issues from a file        |
-| [Get Templates](./docs/features.md#GetTemplates)   | Presents the URLs for the template forms to create and update issues        |
-| [Get Issue](./docs/features.md#GetIssue)   | Gets the information of an issue        |
-| [Search Issues](./docs/features.md#SearchIssues)   | Searches for issues using specific parameters        |
-| [Update Epic Issues Feasibility](./docs/features.md#UpdateEpicIssuesFeasibility)   | Adds a label (spillover or descoped) to the issues of an epic (for a certain project and release/fix version) if the epic feasibility is Yellow or Red (respectively)     |
+| [Create Issues](./docs/features.md#create-issues)     | Creates issues from a file       |
+| [Update Issues](./docs/features.md#update-issues)   | Updates issues from a file        |
+| [Get Templates](./docs/features.md#get-templates)   | Presents the URLs for the template forms to create and update issues        |
+| [Get Issue](./docs/features.md#get-issue)   | Gets the information of an issue        |
+| [Search Issues](./docs/features.md#search-issues)   | Searches for issues using specific parameters        |
+| [Update Epic Issues Feasibility](./docs/features.md#update-epic-issues-feasibility)   | Adds a label (spillover or descoped) to the issues of an epic (for a certain project and release/fix version) if the epic feasibility is Yellow or Red (respectively)     |
