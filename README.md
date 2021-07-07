@@ -9,7 +9,7 @@ With **JIRA CLI**, you can:
 - search for issues that match certain conditions;
 - add a defined label to the issues belonging to a certain epic, with a certain feasability.
 
-The great advantage resides in automationg some processes, which saves a lot of time. 
+The great advantage resides in automating some processes, which saves a lot of time. 
 
 This project is open for contributions and new ideas, so don't be shy and share your thoughts with me!
 
@@ -17,8 +17,10 @@ This project is open for contributions and new ideas, so don't be shy and share 
 ## Requirements
 
 In order to run JIRA CLI, it is necessary to have:
-- Node.js (at least v12)
-- yarn
+- Node.js (at least v12);
+- yarn;
+- an Atlassian account;
+- if you want to add Xray tests, you also need to have the Xray plugin added to your Jira.
 
 ## Setting Up
 
@@ -45,7 +47,19 @@ $ chmod +x ./bin/jira-cli.js
 $ export PATH=<project_path>/bin:$PATH
 ```
 
-## Running the app
+## Adding Env Vars
+
+So you can run the app, first it is necessary to set up a `.env` file. You can find [here](./.env.example) the an example of the env vars needed for the project.
+
+| Env Var      | Description |
+| --------- | --------- |
+| Jira Host     | The Atlassian account URL       |
+| Jira Email   | The email you have associated with the Atlassian account        |
+| Jira Token   | Necessary to perform authentication in the Atlassian account. You can generate a token in the [Atlassian account settings](https://id.atlassian.com/manage-profile/security/api-tokens)        |
+| Xray Client ID / Xray Client Secret   | Necessary to make requests to Xray (to create/update/get Xray tests). You can generate them following the next steps: Jira > Apps > Manage you apps > (Xray label menu) > Api Keys > Create Api Key > Choose the user > Generate. If you don't have the permissions, you need to ask these to an Atlassian account admin.        |
+| Epic Name / Epic Link ID / Acceptance Criteria / Feasability   | These are all custom fields that can be added to Jira issues to allow having more information. Therefore, they are identified as `customfield_XXXXX` (the XXXXX is a number) and these IDs are different for every Atlassian account. To find what are the IDs for your custom fields, follow this [link](https://confluence.atlassian.com/jirakb/how-to-find-id-for-custom-field-s-744522503.html).          |
+
+## Running the App
 
 To know more on the commands available, you can run:
 
