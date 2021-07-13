@@ -10,7 +10,7 @@ export class GetTemplatesCommand {
     autoExit: true,
   })
   async create() {
-    console.info('Template form URL to create issues: t.ly/BGRx');
-    console.info('Template form URL to update issues: t.ly/MNUG');
+    console.info('Template form URL to create issues: t.ly/GvGS');
+    console.info('Template form URL to update issues: t.ly/HiI7');
   }
 }
