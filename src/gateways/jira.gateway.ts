@@ -259,13 +259,24 @@ export class JiraGateway {
     step: Step,
     graphQLClient: GraphQLClient,
   ) {
+    if (step.action == null) {
+      step.action = '';
+    }
+    if (step.data == null) {
+      step.data = '';
+    }
+    if (step.result == null) {
+      step.result = '';
+    }
+
     const query = gql`
       mutation {
         addTestStep(
           issueId: "${issueId}"
-          step: { action: "${step.action.replace('\n', '\\n') || ''}", data: "${
-      step.data.replace('\n', '\\n') || ''
-    }", result: "${step.result.replace('\n', '\\n') || ''}" }
+          step: { 
+            action: "${step.action.replace('\n', '\\n')}", 
+            data: "${step.data.replace('\n', '\\n')}", 
+            result: "${step.result.replace('\n', '\\n')}" }
         ) {
           id
           action
