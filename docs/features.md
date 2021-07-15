@@ -15,7 +15,7 @@ You don't need to use all the fields that are in the example file. For creating 
 
 If the issue type is Epic, then `epic_name` field is also mandatory.
 
-Instead of writing JSON by yourself, you can follow this [link](t.ly/GvGS). It sends you to a JSON Schema Form, that will generate the JSON according to the fields you fill in. Then you just need to copy the JSON generated in the `formData` box to the file you will use in the command.
+Instead of writing JSON by yourself, you can follow this [link](https://t.ly/GvGS). It sends you to a JSON Schema Form, that will generate the JSON according to the fields you fill in. Then you just need to copy the JSON generated in the `formData` box to the file you will use in the command.
 
 
 ## Update Issues
@@ -28,7 +28,7 @@ $ jira-cli update:issues -f <filepath>
 
 Just like for creating an issue, the file should contain JSON. For updating an issue, the only mandatory field is the `id`.
 
-Once again, instead of writing JSON by yourself, you can follow this [link](t.ly/HiI7), which will send you to the right JSON Schema Form to update an issue. You just need to copy the JSON generated in the `formData` box to the file you will use in the command.
+Once again, instead of writing JSON by yourself, you can follow this [link](https://t.ly/HiI7), which will send you to the right JSON Schema Form to update an issue. You just need to copy the JSON generated in the `formData` box to the file you will use in the command.
 
 ## Get Templates
 
