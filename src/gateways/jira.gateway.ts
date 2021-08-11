@@ -2,8 +2,8 @@ import { Inject, Injectable } from '@nestjs/common';
 import { AxiosInstance } from 'axios';
 import { gql, GraphQLClient } from 'graphql-request';
 import { Version3Client } from 'jira.js';
-import { RequestException } from './../exceptions/request.exception';
 import { Issue, IssueData, Step } from './../entities/issue.entity';
+import { RequestException } from './../exceptions/request.exception';
 import { IssueConverter } from './issue.converter';
 
 @Injectable()
@@ -21,12 +21,25 @@ export class JiraGateway {
       async () => await this.client.issues.createIssue(input),
     );
 
-    if (
-      data.issue_type == 'Xray Test' &&
-      data.steps != null &&
-      data.steps.length >= 1
-    ) {
-      await this.addSteps(data.steps, result.id, data.test_type);
+    if (data.issue_type == 'Xray Test' && data.test_type != null) {
+      const token = await this.getAuthToken();
+
+      const graphQLClient = new GraphQLClient(
+        'https://xray.cloud.xpand-it.com/api/v2/graphql',
+        {
+          headers: {
+            authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      await this.retryRequest(async () => {
+        await this.addTestType(data.id, data.test_type, graphQLClient);
+      }, 3);
+
+      if (data.steps != null && data.steps.length > 0) {
+        await this.addSteps(data.steps, result.id, graphQLClient);
+      }
     }
     return result as Issue;
   }
@@ -41,16 +54,35 @@ export class JiraGateway {
 
   public async updateIssue(data: IssueData): Promise<Issue> {
     const input = this.issueConverter.convertToJiraFormat(data);
+
     await this.catcher(
       async () =>
         await this.client.issues.editIssue({ ...input, issueIdOrKey: data.id }),
     );
 
     const issueInfo = await this.getIssue(data.id, false);
-    if (data.steps != null && data.steps.length > 0) {
-      await this.addSteps(data.steps, issueInfo.id, issueInfo.test_type);
+
+    if (data.test_type != null) {
+      const token = await this.getAuthToken();
+
+      const graphQLClient = new GraphQLClient(
+        'https://xray.cloud.xpand-it.com/api/v2/graphql',
+        {
+          headers: {
+            authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      await this.retryRequest(async () => {
+        await this.addTestType(issueInfo.id, data.test_type, graphQLClient);
+      }, 3);
+
+      if (data.steps != null && data.steps.length > 0) {
+        await this.addSteps(data.steps, issueInfo.id, graphQLClient);
+      }
+      return new Issue(issueInfo);
     }
-    return new Issue(issueInfo);
   }
 
   public async getIssue(id: string, getSteps = true): Promise<IssueData> {
@@ -192,22 +224,8 @@ export class JiraGateway {
   private async addSteps(
     steps: Step[],
     issueId: string,
-    testType: string,
+    graphQLClient: GraphQLClient,
   ): Promise<any> {
-    const token = await this.getAuthToken();
-
-    const graphQLClient = new GraphQLClient(
-      'https://xray.cloud.xpand-it.com/api/v2/graphql',
-      {
-        headers: {
-          authorization: `Bearer ${token}`,
-        },
-      },
-    );
-    await this.retryRequest(async () => {
-      await this.addTestType(issueId, testType, graphQLClient);
-    }, 3);
-
     for (const step of steps) {
       await this.retryRequest(async () => {
         await this.addStep(issueId, step, graphQLClient);
