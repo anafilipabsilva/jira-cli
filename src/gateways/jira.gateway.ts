@@ -25,7 +25,7 @@ export class JiraGateway {
       const token = await this.getAuthToken();
 
       const graphQLClient = new GraphQLClient(
-        'https://xray.cloud.xpand-it.com/api/v2/graphql',
+        'https://xray.cloud.getxray.app/api/v2/graphql',
         {
           headers: {
             authorization: `Bearer ${token}`,
@@ -66,7 +66,7 @@ export class JiraGateway {
       const token = await this.getAuthToken();
 
       const graphQLClient = new GraphQLClient(
-        'https://xray.cloud.xpand-it.com/api/v2/graphql',
+        'https://xray.cloud.getxray.app/api/v2/graphql',
         {
           headers: {
             authorization: `Bearer ${token}`,
@@ -310,7 +310,7 @@ export class JiraGateway {
     const token = await this.getAuthToken();
 
     const graphQLClient = new GraphQLClient(
-      'https://xray.cloud.xpand-it.com/api/v2/graphql',
+      'https://xray.cloud.getxray.app/api/v2/graphql',
       {
         headers: {
           authorization: `Bearer ${token}`,
@@ -342,7 +342,7 @@ export class JiraGateway {
 
   private async getAuthToken(): Promise<any> {
     return await this.axios
-      .post('https://xray.cloud.xpand-it.com/api/v2/authenticate', {
+      .post('https://xray.cloud.getxray.app/api/v2/authenticate', {
         client_id: process.env.XRAY_CLIENT_ID,
         client_secret: process.env.XRAY_CLIENT_SECRET,
       })
